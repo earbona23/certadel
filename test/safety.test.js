@@ -10,14 +10,16 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+// Normalise to forward slashes so path matching works identically on Windows.
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..').replace(/\\/g, '/');
 
 function sources(dir, acc = []) {
   for (const entry of readdirSync(dir)) {
     if (entry === 'node_modules' || entry === '.git' || entry === 'test') continue;
     const p = join(dir, entry);
+    const norm = p.replace(/\\/g, '/');
     if (statSync(p).isDirectory()) sources(p, acc);
-    else if (p.endsWith('.js')) acc.push(p);
+    else if (norm.endsWith('.js')) acc.push(norm);
   }
   return acc;
 }

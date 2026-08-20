@@ -45,14 +45,16 @@ before(async () => {
     });
     res.end('<!doctype html><title>ok</title><p>hello</p>');
   });
-  await new Promise((r) => httpsServer.listen(0, '127.0.0.1', r));
+  // Bind dual-stack (no host) so 'localhost' resolves to this server whether it
+  // maps to ::1 or 127.0.0.1 -- Node 18 and 20+ order those differently.
+  await new Promise((r) => httpsServer.listen(0, r));
   httpsPort = httpsServer.address().port;
 
   httpServer = http.createServer((req, res) => {
     res.writeHead(301, { location: `https://localhost:${httpsPort}/` });
     res.end();
   });
-  await new Promise((r) => httpServer.listen(0, '127.0.0.1', r));
+  await new Promise((r) => httpServer.listen(0, r));
 });
 
 after(async () => {
