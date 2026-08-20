@@ -1,0 +1,1227 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security posture certificate — Northwind Retail Group</title>
+<style>
+:root {
+  color-scheme: light dark;
+  --bg: #eef1f5; --surface: #fff; --surface-2: #f6f8fa; --ink: #12161c;
+  --muted: #5a6675; --line: #e0e5eb; --accent: #146b63;
+  --platinum: #2a8f9c; --gold: #b8901f; --silver: #64748b; --bronze: #a0682d; --uncertified: #b02a1f;
+  --pass: #1f7a44; --warn: #9a6a00; --fail: #b02a1f; --skip: #7a8797;
+  --radius: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0c1016; --surface: #141a22; --surface-2: #1a212b; --ink: #e6edf5;
+    --muted: #94a2b4; --line: #232c38; --accent: #35c9bb;
+    --platinum: #43d2e0; --gold: #e5bd43; --silver: #9aa8ba; --bronze: #cf8a4a; --uncertified: #ff6a5c;
+    --pass: #46c07a; --warn: #e5b93f; --fail: #ff6a5c; --skip: #7f8ea0;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.6 ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+/* Certificate hero */
+.cert { background:
+    radial-gradient(120% 120% at 100% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 60%),
+    var(--surface);
+  border: 1px solid var(--line); border-radius: var(--radius); margin: 32px 0;
+  padding: 40px 44px; position: relative; overflow: hidden; }
+.cert::before { content: ""; position: absolute; inset: 0; border-radius: var(--radius);
+  padding: 1px; background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 50%, transparent), transparent 40%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
+.cert .eyebrow { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); font-weight: 700; margin: 0; }
+.cert h1 { margin: 6px 0 2px; font-size: 30px; letter-spacing: -.02em; }
+.cert .sub { color: var(--muted); margin: 0 0 24px; }
+.tierline { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+.tier { font-size: 40px; font-weight: 800; letter-spacing: -.02em; line-height: 1; }
+.tier.platinum { color: var(--platinum); } .tier.gold { color: var(--gold); }
+.tier.silver { color: var(--silver); } .tier.bronze { color: var(--bronze); }
+.tier.uncertified { color: var(--uncertified); }
+.scorebig { font-size: 20px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cert dl { display: flex; flex-wrap: wrap; gap: 6px 40px; margin: 26px 0 0; }
+.cert dt { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+.cert dd { margin: 2px 0 0; font-size: 14px; }
+.disclaimer { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line);
+  color: var(--muted); font-size: 12.5px; }
+
+.gatebanner { margin: 0 0 24px; padding: 14px 18px; border-radius: 10px;
+  background: color-mix(in srgb, var(--fail) 12%, var(--surface)); border: 1px solid color-mix(in srgb, var(--fail) 35%, var(--line));
+  color: var(--ink); }
+.gatebanner strong { color: var(--fail); }
+
+section { margin: 36px 0; }
+h2 { font-size: 19px; margin: 0 0 14px; letter-spacing: -.01em; }
+h3 { font-size: 15px; margin: 26px 0 10px; }
+
+.assetgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(258px, 1fr)); gap: 12px; }
+.assetcard { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px;
+  border-top: 3px solid var(--skip); }
+.assetcard.platinum { border-top-color: var(--platinum); } .assetcard.gold { border-top-color: var(--gold); }
+.assetcard.silver { border-top-color: var(--silver); } .assetcard.bronze { border-top-color: var(--bronze); }
+.assetcard.uncertified { border-top-color: var(--uncertified); }
+.assetcard .host { font-weight: 650; overflow-wrap: anywhere; }
+.assetcard .at { font-size: 13px; font-weight: 700; }
+.assetcard .sc { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+
+.dims { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.dim-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 12.5px; }
+.dim-label { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dim .pct { color: var(--ink); font-variant-numeric: tabular-nums; font-weight: 600; flex: none; }
+.bar { height: 6px; background: var(--surface-2); border-radius: 999px; overflow: hidden; margin-top: 4px; }
+.bar > span { display: block; height: 100%; border-radius: 999px; background: var(--accent); }
+
+table.grid { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 10px; overflow: hidden; }
+table.grid th, table.grid td { padding: 9px 13px; text-align: left; border-bottom: 1px solid var(--line); font-size: 13.5px; vertical-align: top; }
+table.grid thead th { background: var(--surface-2); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+table.grid tbody tr:last-child td { border-bottom: 0; }
+
+.status { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; padding: 2px 7px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.st-pass { color: var(--pass); } .st-warn { color: var(--warn); } .st-fail { color: var(--fail); } .st-skip { color: var(--skip); }
+
+.finding { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--skip);
+  border-radius: 10px; margin-bottom: 8px; }
+.finding.sev-critical, .finding.sev-high { border-left-color: var(--fail); }
+.finding.sev-medium { border-left-color: var(--warn); }
+.finding[hidden] { display: none; }
+.finding > summary { cursor: pointer; padding: 11px 15px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; list-style: none; }
+.finding > summary::-webkit-details-marker { display: none; }
+.pill { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 7px; border-radius: 4px; border: 1px solid currentColor; }
+.finding .host-chip { font-size: 11px; color: var(--muted); font-family: ui-monospace, monospace; }
+.finding .ftitle { font-weight: 600; }
+.finding .body { padding: 0 15px 15px; border-top: 1px solid var(--line); }
+.finding .detail { margin: 13px 0 0; }
+.finding .rec { margin: 11px 0 0; padding: 11px 13px; background: var(--surface-2); border-radius: 8px; font-size: 14px; }
+.finding .rec strong { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); margin-bottom: 3px; }
+pre.evidence { margin: 12px 0 0; padding: 11px 13px; overflow-x: auto; background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; font-family: ui-monospace, monospace; font-size: 12px; }
+.filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 10px; }
+.filters input[type=search] { min-width: 240px; padding: 8px 12px; font: inherit; font-size: 14px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; cursor: pointer; font-size: 12px; font-weight: 600; border: 1px solid var(--line); background: var(--surface); color: var(--muted); }
+footer { margin: 44px 0; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12.5px; }
+
+@media print {
+  :root { --bg:#fff; --surface:#fff; --surface-2:#fff; --line:#bbb; --ink:#000; --muted:#333; }
+  .no-print { display: none !important; }
+  .finding { break-inside: avoid; } .finding > .body { display: block !important; }
+  .cert { break-inside: avoid; }
+}
+</style></head><body><main class="wrap">
+<div class="cert">
+<p class="eyebrow">certadel · external security posture certificate</p>
+<h1>Northwind Retail Group</h1>
+<p class="sub">3 assets assessed · 2026-03-14 09:41:00 UTC</p>
+<div class="tierline">
+<span class="tier bronze">Bronze</span>
+<span class="scorebig">mean score 84.1/100</span>
+</div>
+<p class="sub" style="margin-top:16px">The organisation tier is set by its weakest asset, <span class="mono">blog.northwind.example</span> — an attacker targets the softest host, so the grade follows the floor, not the average.</p>
+<dl>
+<div><dt>Verification code</dt><dd class="mono">CERTADEL-89DC-52AC-B22B</dd></div>
+<div><dt>Authorized by</dt><dd>ciso@northwind.example</dd></div>
+<div><dt>Engagement</dt><dd>ENG-2026-014</dd></div>
+<div><dt>Tool</dt><dd>certadel 1.0.0</dd></div>
+</dl>
+<p class="disclaimer">This is a <strong>self-assessment</strong> of publicly observable configuration (TLS, HTTP headers, DNS and email-authentication records). It is not an accredited audit and does not test application logic, authorisation or code. The verification code is derived from the posture itself: re-run certadel on the same assets and it will match until something material changes.</p>
+</div>
+<section><h2>Assets</h2><div class="assetgrid">
+<div class="assetcard platinum">
+<div class="host">shop.northwind.example</div>
+<div><span class="at" style="color:var(--platinum)">Platinum</span> <span class="sc">100/100</span></div>
+<div class="dims">
+<div class="dim">
+<div class="dim-top"><span class="dim-label">Transport security (TLS)</span><span class="pct">100</span></div>
+<span class="bar"><span style="width:100%"></span></span>
+</div>
+<div class="dim">
+<div class="dim-top"><span class="dim-label">HTTP security headers</span><span class="pct">100</span></div>
+<span class="bar"><span style="width:100%"></span></span>
+</div>
+<div class="dim">
+<div class="dim-top"><span class="dim-label">Cookie flags</span><span class="pct">100</span></div>
+<span class="bar"><span style="width:100%"></span></span>
+</div>
+<div class="dim">
+<div class="dim-top"><span class="dim-label">DNS &amp; domain hygiene</span><span class="pct">100</span></div>
+<span class="bar"><span style="width:100%"></span></span>
+</div>
+<div class="dim">
+<div class="dim-top"><span class="dim-label">Email authentication</span><span class="pct">100</span></div>
+<span class="bar"><span style="width:100%"></span></span>
+</div>
+<div class="dim">
+<div class="dim-top"><span class="dim-label">Exposure &amp; hygiene</span><span class="pct">100</span></div>
+<span class="bar"><span style="width:100%"></span></span>
+</div>
+</div></div>
+<div class="assetcard gold">
+<div class="host">api.northwind.example</div>
+<div><span class="at" style="color:var(--gold)">Gold</span> <span class="sc">87.9/100</span></div>
+<div class="dims">
+<div class="dim">
+<div class="dim-top"><span class="dim-label">Transport security (TLS)</span><span class="pct">100</span></div>
+<span class="bar"><span style="width:100%"></span></span>
+</div>
+<div class="dim">
+<div class="dim-top"><span class="dim-label">HTTP security headers</span><span class="pct">60.9</span></div>
+<span class="bar"><span style="width:60.9%"></span></span>
+</div>
+<div class="dim">
+<div class="dim-top"><span class="dim-label">Cookie flags</span><span class="pct">100</span></div>
+<span class="bar"><span style="width:100%"></span></span>
+</div>
+<div class="dim">
+<div class="dim-top"><span class="dim-label">DNS &amp; domain hygiene</span><span class="pct">83.3</span></div>
+<span class="bar"><span style="width:83.3%"></span></span>
+</div>
+<div class="dim">
+<div class="dim-top"><span class="dim-label">Email authentication</span><span class="pct">84</span></div>
+<span class="bar"><span style="width:84%"></span></span>
+</div>
+<div class="dim">
+<div class="dim-top"><span class="dim-label">Exposure &amp; hygiene</span><span class="pct">90</span></div>
+<span class="bar"><span style="width:90%"></span></span>
+</div>
+</div></div>
+<div class="assetcard bronze">
+<div class="host">blog.northwind.example</div>
+<div><span class="at" style="color:var(--bronze)">Bronze</span> <span class="sc">64.4/100</span></div>
+<div class="dims">
+<div class="dim">
+<div class="dim-top"><span class="dim-label">Transport security (TLS)</span><span class="pct">100</span></div>
+<span class="bar"><span style="width:100%"></span></span>
+</div>
+<div class="dim">
+<div class="dim-top"><span class="dim-label">HTTP security headers</span><span class="pct">65.2</span></div>
+<span class="bar"><span style="width:65.2%"></span></span>
+</div>
+<div class="dim">
+<div class="dim-top"><span class="dim-label">Cookie flags</span><span class="pct">36.4</span></div>
+<span class="bar"><span style="width:36.4%"></span></span>
+</div>
+<div class="dim">
+<div class="dim-top"><span class="dim-label">DNS &amp; domain hygiene</span><span class="pct">66.7</span></div>
+<span class="bar"><span style="width:66.7%"></span></span>
+</div>
+<div class="dim">
+<div class="dim-top"><span class="dim-label">Email authentication</span><span class="pct">20</span></div>
+<span class="bar"><span style="width:20%"></span></span>
+</div>
+<div class="dim">
+<div class="dim-top"><span class="dim-label">Exposure &amp; hygiene</span><span class="pct">90</span></div>
+<span class="bar"><span style="width:90%"></span></span>
+</div>
+</div></div>
+</div></section>
+<section><h2>Findings</h2>
+<div class="filters no-print">
+<input type="search" id="q" placeholder="filter by host, control, detail…" autocomplete="off">
+<div id="sev" style="display:flex;gap:8px;flex-wrap:wrap">
+<label class="chip"><input type="checkbox" value="fail" checked> Fail</label>
+<label class="chip"><input type="checkbox" value="warn" checked> Warn</label>
+<label class="chip"><input type="checkbox" value="pass"> Pass</label>
+<label class="chip"><input type="checkbox" value="skip"> N/A</label>
+</div><span id="shown" class="mono" style="margin-left:auto;color:var(--muted)"></span></div>
+<h3 data-group>shop.northwind.example</h3>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example obsolete tls versions are disabled the host declined tls 1.0 and 1.1; strongest negotiated was tlsv1.3. transport">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Obsolete TLS versions are disabled</span>
+</summary><div class="body">
+<p class="detail">The host declined TLS 1.0 and 1.1; strongest negotiated was TLSv1.3.</p>
+<pre class="evidence">{
+  &quot;legacyAccepted&quot;: [],
+  &quot;strongest&quot;: &quot;TLSv1.3&quot;
+}</pre>
+<p style="margin:10px 0 0"><a href="https://ssl-config.mozilla.org/" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example certificate chain is trusted and current chain validated against system roots; issued by let&#39;s encrypt. transport">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Certificate chain is trusted and current</span>
+</summary><div class="body">
+<p class="detail">Chain validated against system roots; issued by Let&#39;s Encrypt.</p>
+<pre class="evidence">{
+  &quot;issuer&quot;: &quot;Let&#39;s Encrypt&quot;
+}</pre>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example certificate is not near expiry the certificate is valid for another 70 day(s). transport">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Certificate is not near expiry</span>
+</summary><div class="body">
+<p class="detail">The certificate is valid for another 70 day(s).</p>
+<pre class="evidence">{
+  &quot;daysRemaining&quot;: 70,
+  &quot;validTo&quot;: &quot;2026-10-29T05:11:00.915Z&quot;
+}</pre>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example certificate key meets modern strength ec key of 256 bits. transport">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Certificate key meets modern strength</span>
+</summary><div class="body">
+<p class="detail">EC key of 256 bits.</p>
+<pre class="evidence">{
+  &quot;keyBits&quot;: 256,
+  &quot;keyType&quot;: &quot;EC&quot;
+}</pre>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example negotiated cipher provides forward secrecy negotiated tlsv1.3 with tls_aes_256_gcm_sha384. transport">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Negotiated cipher provides forward secrecy</span>
+</summary><div class="body">
+<p class="detail">Negotiated TLSv1.3 with TLS_AES_256_GCM_SHA384.</p>
+<pre class="evidence">{
+  &quot;cipher&quot;: &quot;TLS_AES_256_GCM_SHA384&quot;,
+  &quot;protocol&quot;: &quot;TLSv1.3&quot;
+}</pre>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example hsts is enabled with a durable max-age hsts present with max-age 63072000, includesubdomains, preload. transport">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">HSTS is enabled with a durable max-age</span>
+</summary><div class="body">
+<p class="detail">HSTS present with max-age 63072000, includeSubDomains, preload.</p>
+<pre class="evidence">{
+  &quot;includeSubDomains&quot;: true,
+  &quot;maxAge&quot;: 63072000,
+  &quot;preload&quot;: true,
+  &quot;present&quot;: true
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example content-security-policy is present a content-security-policy is present with no obvious script-source weakening. headers">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Content-Security-Policy is present</span>
+</summary><div class="body">
+<p class="detail">A Content-Security-Policy is present with no obvious script-source weakening.</p>
+<pre class="evidence">{
+  &quot;directives&quot;: [
+    &quot;default-src&quot;,
+    &quot;object-src&quot;,
+    &quot;frame-ancestors&quot;,
+    &quot;base-uri&quot;
+  ]
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/Content-Security-Policy" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example x-content-type-options is nosniff nosniff is set. headers">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">X-Content-Type-Options is nosniff</span>
+</summary><div class="body">
+<p class="detail">nosniff is set.</p>
+<pre class="evidence">{
+  &quot;value&quot;: &quot;nosniff&quot;
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/X-Content-Type-Options" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example clickjacking protection is present framing is restricted via csp frame-ancestors. headers">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Clickjacking protection is present</span>
+</summary><div class="body">
+<p class="detail">Framing is restricted via CSP frame-ancestors.</p>
+<pre class="evidence">{
+  &quot;cspFrameAncestors&quot;: true,
+  &quot;xFrameOptions&quot;: null
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/X-Frame-Options" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example referrer-policy avoids leaking full urls referrer-policy is &quot;strict-origin-when-cross-origin&quot;. headers">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Referrer-Policy avoids leaking full URLs</span>
+</summary><div class="body">
+<p class="detail">Referrer-Policy is &quot;strict-origin-when-cross-origin&quot;.</p>
+<pre class="evidence">{
+  &quot;value&quot;: &quot;strict-origin-when-cross-origin&quot;
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/Referrer-Policy" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example permissions-policy restricts powerful features a permissions-policy header is present. headers">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Permissions-Policy restricts powerful features</span>
+</summary><div class="body">
+<p class="detail">A Permissions-Policy header is present.</p>
+<pre class="evidence">{
+  &quot;present&quot;: true
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/Permissions-Policy" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example server does not advertise software versions no precise software versions are advertised in response headers. headers">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Server does not advertise software versions</span>
+</summary><div class="body">
+<p class="detail">No precise software versions are advertised in response headers.</p>
+<pre class="evidence">{
+  &quot;server&quot;: null,
+  &quot;xPoweredBy&quot;: null
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/Server" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example cookies are marked secure all 1 cookie(s) satisfy this flag. cookies">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Cookies are marked Secure</span>
+</summary><div class="body">
+<p class="detail">All 1 cookie(s) satisfy this flag.</p>
+<pre class="evidence">{
+  &quot;offending&quot;: [],
+  &quot;total&quot;: 1
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Cookies" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example session cookies are marked httponly all 1 cookie(s) satisfy this flag. cookies">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Session cookies are marked HttpOnly</span>
+</summary><div class="body">
+<p class="detail">All 1 cookie(s) satisfy this flag.</p>
+<pre class="evidence">{
+  &quot;offending&quot;: [],
+  &quot;total&quot;: 1
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Cookies" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example cookies set an explicit samesite policy all 1 cookie(s) satisfy this flag. cookies">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Cookies set an explicit SameSite policy</span>
+</summary><div class="body">
+<p class="detail">All 1 cookie(s) satisfy this flag.</p>
+<pre class="evidence">{
+  &quot;offending&quot;: [],
+  &quot;total&quot;: 1
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Cookies" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example a caa record restricts certificate issuance caa present, authorising: letsencrypt.org. dns">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">A CAA record restricts certificate issuance</span>
+</summary><div class="body">
+<p class="detail">CAA present, authorising: letsencrypt.org.</p>
+<pre class="evidence">{
+  &quot;records&quot;: [
+    {
+      &quot;critical&quot;: 0,
+      &quot;issue&quot;: &quot;letsencrypt.org&quot;,
+      &quot;value&quot;: &quot;letsencrypt.org&quot;
+    }
+  ]
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/Security/Practical_implementation_guides/CAA" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example the domain has redundant nameservers 2 authoritative nameserver(s) are published. dns">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">The domain has redundant nameservers</span>
+</summary><div class="body">
+<p class="detail">2 authoritative nameserver(s) are published.</p>
+<pre class="evidence">{
+  &quot;nameservers&quot;: [
+    &quot;ns1.northwind.example&quot;,
+    &quot;ns2.northwind.example&quot;
+  ]
+}</pre>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example the zone is signed with dnssec a validating resolver (cloudflare-dns.com) returned authenticated data for this zone. dns">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">The zone is signed with DNSSEC</span>
+</summary><div class="body">
+<p class="detail">A validating resolver (cloudflare-dns.com) returned authenticated data for this zone.</p>
+<pre class="evidence">{
+  &quot;authenticatedData&quot;: true,
+  &quot;resolver&quot;: &quot;cloudflare-dns.com&quot;
+}</pre>
+<p style="margin:10px 0 0"><a href="https://www.cloudflare.com/dns/dnssec/how-dnssec-works/" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example spf authorises legitimate senders and rejects the rest a single spf record ends in -all (hard fail for unlisted senders). email">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">SPF authorises legitimate senders and rejects the rest</span>
+</summary><div class="body">
+<p class="detail">A single SPF record ends in -all (hard fail for unlisted senders).</p>
+<pre class="evidence">{
+  &quot;lookups&quot;: 2,
+  &quot;qualifier&quot;: &quot;-&quot;
+}</pre>
+<p style="margin:10px 0 0"><a href="https://dmarc.org/overview/" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example dmarc is published with an enforcing policy dmarc p=reject with aggregate reporting. email">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">DMARC is published with an enforcing policy</span>
+</summary><div class="body">
+<p class="detail">DMARC p=reject with aggregate reporting.</p>
+<pre class="evidence">{
+  &quot;pct&quot;: 100,
+  &quot;policy&quot;: &quot;reject&quot;,
+  &quot;rua&quot;: &quot;mailto:dmarc@northwind.example&quot;,
+  &quot;ruf&quot;: null,
+  &quot;subdomainPolicy&quot;: null,
+  &quot;version&quot;: &quot;DMARC1&quot;
+}</pre>
+<p style="margin:10px 0 0"><a href="https://dmarc.org/overview/" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example a dkim signing key is published a dkim key was found at selector(s): google. email">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">A DKIM signing key is published</span>
+</summary><div class="body">
+<p class="detail">A DKIM key was found at selector(s): google.</p>
+<pre class="evidence">{
+  &quot;selectors&quot;: [
+    &quot;google&quot;
+  ]
+}</pre>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example mta-sts enforces tls for inbound mail mta-sts is published in enforce mode. email">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">MTA-STS enforces TLS for inbound mail</span>
+</summary><div class="body">
+<p class="detail">MTA-STS is published in enforce mode.</p>
+<pre class="evidence">{
+  &quot;mode&quot;: &quot;enforce&quot;
+}</pre>
+<p style="margin:10px 0 0"><a href="https://www.rfc-editor.org/rfc/rfc8461" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example tls-rpt requests transport-security reports a tls-rpt record is published. email">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">TLS-RPT requests transport-security reports</span>
+</summary><div class="body">
+<p class="detail">A TLS-RPT record is published.</p>
+<pre class="evidence">{
+  &quot;present&quot;: true
+}</pre>
+<p style="margin:10px 0 0"><a href="https://www.rfc-editor.org/rfc/rfc8460" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example plain http redirects to https an http request was redirected to https://shop.northwind.example/. exposure">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Plain HTTP redirects to HTTPS</span>
+</summary><div class="body">
+<p class="detail">An HTTP request was redirected to https://shop.northwind.example/.</p>
+<pre class="evidence">{
+  &quot;finalUrl&quot;: &quot;https://shop.northwind.example/&quot;,
+  &quot;redirected&quot;: true
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/Security/Transport_Layer_Security" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example a security.txt tells researchers how to report issues a security.txt is present with contact and expires fields. exposure">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">A security.txt tells researchers how to report issues</span>
+</summary><div class="body">
+<p class="detail">A security.txt is present with Contact and Expires fields.</p>
+<pre class="evidence">{
+  &quot;hasContact&quot;: true,
+  &quot;hasExpires&quot;: true
+}</pre>
+<p style="margin:10px 0 0"><a href="https://www.rfc-editor.org/rfc/rfc9116" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="shop.northwind.example the homepage loads no resources over plain http no plain-http resource references were found in the homepage markup. exposure">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">The homepage loads no resources over plain HTTP</span>
+</summary><div class="body">
+<p class="detail">No plain-HTTP resource references were found in the homepage markup.</p>
+<pre class="evidence">{
+  &quot;references&quot;: [],
+  &quot;truncatedBody&quot;: false
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/Security/Mixed_content" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<h3 data-group>api.northwind.example</h3>
+<details class="finding sev-medium" data-status="fail" data-search="api.northwind.example clickjacking protection is present neither csp frame-ancestors nor a restrictive x-frame-options is set. headers">
+<summary>
+<span class="status st-fail">fail</span>
+<span class="ftitle">Clickjacking protection is present</span>
+<span class="pill st-warn">medium</span>
+</summary><div class="body">
+<p class="detail">Neither CSP frame-ancestors nor a restrictive X-Frame-Options is set.</p>
+<p class="rec"><strong>What to do</strong> Set CSP frame-ancestors &#39;self&#39; (preferred) or X-Frame-Options: SAMEORIGIN.</p>
+<pre class="evidence">{
+  &quot;cspFrameAncestors&quot;: false,
+  &quot;xFrameOptions&quot;: null
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/X-Frame-Options" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-medium" data-status="warn" data-search="api.northwind.example content-security-policy is present csp present but weakened: script-src allows &#39;unsafe-inline&#39;. headers">
+<summary>
+<span class="status st-warn">warn</span>
+<span class="ftitle">Content-Security-Policy is present</span>
+</summary><div class="body">
+<p class="detail">CSP present but weakened: script-src allows &#39;unsafe-inline&#39;.</p>
+<p class="rec"><strong>What to do</strong> Remove &#39;unsafe-inline&#39; and &#39;unsafe-eval&#39; from script-src and avoid wildcard sources; adopt nonces or hashes for inline scripts.</p>
+<pre class="evidence">{
+  &quot;weaknesses&quot;: [
+    &quot;script-src allows &#39;unsafe-inline&#39;&quot;
+  ]
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/Content-Security-Policy" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-medium" data-status="warn" data-search="api.northwind.example dmarc is published with an enforcing policy dmarc p=quarantine; forged mail is quarantined but not rejected outright. email">
+<summary>
+<span class="status st-warn">warn</span>
+<span class="ftitle">DMARC is published with an enforcing policy</span>
+</summary><div class="body">
+<p class="detail">DMARC p=quarantine; forged mail is quarantined but not rejected outright.</p>
+<p class="rec"><strong>What to do</strong> Advance to p=reject once quarantine has shown no false positives.</p>
+<pre class="evidence">{
+  &quot;pct&quot;: 100,
+  &quot;policy&quot;: &quot;quarantine&quot;,
+  &quot;rua&quot;: &quot;mailto:dmarc@northwind.example&quot;,
+  &quot;ruf&quot;: null,
+  &quot;subdomainPolicy&quot;: null,
+  &quot;version&quot;: &quot;DMARC1&quot;
+}</pre>
+<p style="margin:10px 0 0"><a href="https://dmarc.org/overview/" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-low" data-status="warn" data-search="api.northwind.example permissions-policy restricts powerful features no permissions-policy header is set. headers">
+<summary>
+<span class="status st-warn">warn</span>
+<span class="ftitle">Permissions-Policy restricts powerful features</span>
+</summary><div class="body">
+<p class="detail">No Permissions-Policy header is set.</p>
+<p class="rec"><strong>What to do</strong> Add a Permissions-Policy that disables features the site does not use (camera, microphone, geolocation, etc.).</p>
+<pre class="evidence">{
+  &quot;present&quot;: false
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/Permissions-Policy" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-low" data-status="warn" data-search="api.northwind.example server does not advertise software versions version information is disclosed: nginx/1.24.0. headers">
+<summary>
+<span class="status st-warn">warn</span>
+<span class="ftitle">Server does not advertise software versions</span>
+</summary><div class="body">
+<p class="detail">Version information is disclosed: nginx/1.24.0.</p>
+<p class="rec"><strong>What to do</strong> Suppress version detail in the Server header and remove X-Powered-By. It hands an attacker a shortlist of version-specific exploits for free.</p>
+<pre class="evidence">{
+  &quot;server&quot;: &quot;nginx/1.24.0&quot;,
+  &quot;xPoweredBy&quot;: null
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/Server" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-low" data-status="warn" data-search="api.northwind.example the zone is signed with dnssec the zone is not dnssec-validated according to cloudflare-dns.com. dns">
+<summary>
+<span class="status st-warn">warn</span>
+<span class="ftitle">The zone is signed with DNSSEC</span>
+</summary><div class="body">
+<p class="detail">The zone is not DNSSEC-validated according to cloudflare-dns.com.</p>
+<p class="rec"><strong>What to do</strong> Enable DNSSEC signing at your DNS provider and publish the DS record at the registrar, so responses cannot be forged in transit.</p>
+<pre class="evidence">{
+  &quot;authenticatedData&quot;: false,
+  &quot;resolver&quot;: &quot;cloudflare-dns.com&quot;
+}</pre>
+<p style="margin:10px 0 0"><a href="https://www.cloudflare.com/dns/dnssec/how-dnssec-works/" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-low" data-status="warn" data-search="api.northwind.example a security.txt tells researchers how to report issues no security.txt was served at /.well-known/security.txt. exposure">
+<summary>
+<span class="status st-warn">warn</span>
+<span class="ftitle">A security.txt tells researchers how to report issues</span>
+</summary><div class="body">
+<p class="detail">No security.txt was served at /.well-known/security.txt.</p>
+<p class="rec"><strong>What to do</strong> Publish /.well-known/security.txt with at least a Contact and an Expires field (RFC 9116), so anyone who finds a flaw knows how to reach you.</p>
+<pre class="evidence">{
+  &quot;present&quot;: false
+}</pre>
+<p style="margin:10px 0 0"><a href="https://www.rfc-editor.org/rfc/rfc9116" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="api.northwind.example obsolete tls versions are disabled the host declined tls 1.0 and 1.1; strongest negotiated was tlsv1.3. transport">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Obsolete TLS versions are disabled</span>
+</summary><div class="body">
+<p class="detail">The host declined TLS 1.0 and 1.1; strongest negotiated was TLSv1.3.</p>
+<pre class="evidence">{
+  &quot;legacyAccepted&quot;: [],
+  &quot;strongest&quot;: &quot;TLSv1.3&quot;
+}</pre>
+<p style="margin:10px 0 0"><a href="https://ssl-config.mozilla.org/" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="api.northwind.example certificate chain is trusted and current chain validated against system roots; issued by let&#39;s encrypt. transport">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Certificate chain is trusted and current</span>
+</summary><div class="body">
+<p class="detail">Chain validated against system roots; issued by Let&#39;s Encrypt.</p>
+<pre class="evidence">{
+  &quot;issuer&quot;: &quot;Let&#39;s Encrypt&quot;
+}</pre>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="api.northwind.example certificate is not near expiry the certificate is valid for another 70 day(s). transport">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Certificate is not near expiry</span>
+</summary><div class="body">
+<p class="detail">The certificate is valid for another 70 day(s).</p>
+<pre class="evidence">{
+  &quot;daysRemaining&quot;: 70,
+  &quot;validTo&quot;: &quot;2026-10-29T05:11:00.918Z&quot;
+}</pre>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="api.northwind.example certificate key meets modern strength ec key of 256 bits. transport">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Certificate key meets modern strength</span>
+</summary><div class="body">
+<p class="detail">EC key of 256 bits.</p>
+<pre class="evidence">{
+  &quot;keyBits&quot;: 256,
+  &quot;keyType&quot;: &quot;EC&quot;
+}</pre>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="api.northwind.example negotiated cipher provides forward secrecy negotiated tlsv1.3 with tls_aes_256_gcm_sha384. transport">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Negotiated cipher provides forward secrecy</span>
+</summary><div class="body">
+<p class="detail">Negotiated TLSv1.3 with TLS_AES_256_GCM_SHA384.</p>
+<pre class="evidence">{
+  &quot;cipher&quot;: &quot;TLS_AES_256_GCM_SHA384&quot;,
+  &quot;protocol&quot;: &quot;TLSv1.3&quot;
+}</pre>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="api.northwind.example hsts is enabled with a durable max-age hsts present with max-age 63072000, includesubdomains, preload. transport">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">HSTS is enabled with a durable max-age</span>
+</summary><div class="body">
+<p class="detail">HSTS present with max-age 63072000, includeSubDomains, preload.</p>
+<pre class="evidence">{
+  &quot;includeSubDomains&quot;: true,
+  &quot;maxAge&quot;: 63072000,
+  &quot;preload&quot;: true,
+  &quot;present&quot;: true
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="api.northwind.example x-content-type-options is nosniff nosniff is set. headers">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">X-Content-Type-Options is nosniff</span>
+</summary><div class="body">
+<p class="detail">nosniff is set.</p>
+<pre class="evidence">{
+  &quot;value&quot;: &quot;nosniff&quot;
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/X-Content-Type-Options" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="api.northwind.example referrer-policy avoids leaking full urls referrer-policy is &quot;strict-origin-when-cross-origin&quot;. headers">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Referrer-Policy avoids leaking full URLs</span>
+</summary><div class="body">
+<p class="detail">Referrer-Policy is &quot;strict-origin-when-cross-origin&quot;.</p>
+<pre class="evidence">{
+  &quot;value&quot;: &quot;strict-origin-when-cross-origin&quot;
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/Referrer-Policy" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="api.northwind.example cookies are marked secure all 1 cookie(s) satisfy this flag. cookies">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Cookies are marked Secure</span>
+</summary><div class="body">
+<p class="detail">All 1 cookie(s) satisfy this flag.</p>
+<pre class="evidence">{
+  &quot;offending&quot;: [],
+  &quot;total&quot;: 1
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Cookies" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="api.northwind.example session cookies are marked httponly all 1 cookie(s) satisfy this flag. cookies">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Session cookies are marked HttpOnly</span>
+</summary><div class="body">
+<p class="detail">All 1 cookie(s) satisfy this flag.</p>
+<pre class="evidence">{
+  &quot;offending&quot;: [],
+  &quot;total&quot;: 1
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Cookies" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="api.northwind.example cookies set an explicit samesite policy all 1 cookie(s) satisfy this flag. cookies">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Cookies set an explicit SameSite policy</span>
+</summary><div class="body">
+<p class="detail">All 1 cookie(s) satisfy this flag.</p>
+<pre class="evidence">{
+  &quot;offending&quot;: [],
+  &quot;total&quot;: 1
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Cookies" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="api.northwind.example a caa record restricts certificate issuance caa present, authorising: letsencrypt.org. dns">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">A CAA record restricts certificate issuance</span>
+</summary><div class="body">
+<p class="detail">CAA present, authorising: letsencrypt.org.</p>
+<pre class="evidence">{
+  &quot;records&quot;: [
+    {
+      &quot;critical&quot;: 0,
+      &quot;issue&quot;: &quot;letsencrypt.org&quot;,
+      &quot;value&quot;: &quot;letsencrypt.org&quot;
+    }
+  ]
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/Security/Practical_implementation_guides/CAA" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="api.northwind.example the domain has redundant nameservers 2 authoritative nameserver(s) are published. dns">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">The domain has redundant nameservers</span>
+</summary><div class="body">
+<p class="detail">2 authoritative nameserver(s) are published.</p>
+<pre class="evidence">{
+  &quot;nameservers&quot;: [
+    &quot;ns1.northwind.example&quot;,
+    &quot;ns2.northwind.example&quot;
+  ]
+}</pre>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="api.northwind.example spf authorises legitimate senders and rejects the rest a single spf record ends in -all (hard fail for unlisted senders). email">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">SPF authorises legitimate senders and rejects the rest</span>
+</summary><div class="body">
+<p class="detail">A single SPF record ends in -all (hard fail for unlisted senders).</p>
+<pre class="evidence">{
+  &quot;lookups&quot;: 2,
+  &quot;qualifier&quot;: &quot;-&quot;
+}</pre>
+<p style="margin:10px 0 0"><a href="https://dmarc.org/overview/" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="api.northwind.example a dkim signing key is published a dkim key was found at selector(s): google. email">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">A DKIM signing key is published</span>
+</summary><div class="body">
+<p class="detail">A DKIM key was found at selector(s): google.</p>
+<pre class="evidence">{
+  &quot;selectors&quot;: [
+    &quot;google&quot;
+  ]
+}</pre>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="api.northwind.example mta-sts enforces tls for inbound mail mta-sts is published in enforce mode. email">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">MTA-STS enforces TLS for inbound mail</span>
+</summary><div class="body">
+<p class="detail">MTA-STS is published in enforce mode.</p>
+<pre class="evidence">{
+  &quot;mode&quot;: &quot;enforce&quot;
+}</pre>
+<p style="margin:10px 0 0"><a href="https://www.rfc-editor.org/rfc/rfc8461" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="api.northwind.example tls-rpt requests transport-security reports a tls-rpt record is published. email">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">TLS-RPT requests transport-security reports</span>
+</summary><div class="body">
+<p class="detail">A TLS-RPT record is published.</p>
+<pre class="evidence">{
+  &quot;present&quot;: true
+}</pre>
+<p style="margin:10px 0 0"><a href="https://www.rfc-editor.org/rfc/rfc8460" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="api.northwind.example plain http redirects to https an http request was redirected to https://api.northwind.example/. exposure">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Plain HTTP redirects to HTTPS</span>
+</summary><div class="body">
+<p class="detail">An HTTP request was redirected to https://api.northwind.example/.</p>
+<pre class="evidence">{
+  &quot;finalUrl&quot;: &quot;https://api.northwind.example/&quot;,
+  &quot;redirected&quot;: true
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/Security/Transport_Layer_Security" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="api.northwind.example the homepage loads no resources over plain http no plain-http resource references were found in the homepage markup. exposure">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">The homepage loads no resources over plain HTTP</span>
+</summary><div class="body">
+<p class="detail">No plain-HTTP resource references were found in the homepage markup.</p>
+<pre class="evidence">{
+  &quot;references&quot;: [],
+  &quot;truncatedBody&quot;: false
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/Security/Mixed_content" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<h3 data-group>blog.northwind.example</h3>
+<details class="finding sev-high" data-status="fail" data-search="blog.northwind.example content-security-policy is present no content-security-policy header was returned. headers">
+<summary>
+<span class="status st-fail">fail</span>
+<span class="ftitle">Content-Security-Policy is present</span>
+<span class="pill st-fail">high</span>
+</summary><div class="body">
+<p class="detail">No Content-Security-Policy header was returned.</p>
+<p class="rec"><strong>What to do</strong> Add a Content-Security-Policy. Even a conservative policy that sets default-src &#39;self&#39; and object-src &#39;none&#39; materially reduces XSS impact.</p>
+<pre class="evidence">{
+  &quot;present&quot;: false
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/Content-Security-Policy" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-high" data-status="fail" data-search="blog.northwind.example spf authorises legitimate senders and rejects the rest no spf record was found. email">
+<summary>
+<span class="status st-fail">fail</span>
+<span class="ftitle">SPF authorises legitimate senders and rejects the rest</span>
+<span class="pill st-fail">high</span>
+</summary><div class="body">
+<p class="detail">No SPF record was found.</p>
+<p class="rec"><strong>What to do</strong> Publish an SPF record listing your authorised senders and ending in -all, so receivers can reject mail from anywhere else.</p>
+<pre class="evidence">{
+  &quot;count&quot;: 0
+}</pre>
+<p style="margin:10px 0 0"><a href="https://dmarc.org/overview/" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-high" data-status="fail" data-search="blog.northwind.example dmarc is published with an enforcing policy no dmarc record was found at _dmarc. email">
+<summary>
+<span class="status st-fail">fail</span>
+<span class="ftitle">DMARC is published with an enforcing policy</span>
+<span class="pill st-fail">high</span>
+</summary><div class="body">
+<p class="detail">No DMARC record was found at _dmarc.</p>
+<p class="rec"><strong>What to do</strong> Publish a DMARC record. Start at p=none with a rua address to observe, then move to p=quarantine and p=reject as confidence grows.</p>
+<pre class="evidence">{
+  &quot;present&quot;: false
+}</pre>
+<p style="margin:10px 0 0"><a href="https://dmarc.org/overview/" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-medium" data-status="fail" data-search="blog.northwind.example session cookies are marked httponly 1 of 1 cookie(s) miss it: tracker. cookies">
+<summary>
+<span class="status st-fail">fail</span>
+<span class="ftitle">Session cookies are marked HttpOnly</span>
+<span class="pill st-warn">medium</span>
+</summary><div class="body">
+<p class="detail">1 of 1 cookie(s) miss it: tracker.</p>
+<p class="rec"><strong>What to do</strong> Add HttpOnly to cookies that scripts do not need to read, so an XSS flaw cannot steal them.</p>
+<pre class="evidence">{
+  &quot;offending&quot;: [
+    &quot;tracker&quot;
+  ],
+  &quot;total&quot;: 1
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Cookies" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-medium" data-status="fail" data-search="blog.northwind.example cookies set an explicit samesite policy 1 of 1 cookie(s) miss it: tracker. cookies">
+<summary>
+<span class="status st-fail">fail</span>
+<span class="ftitle">Cookies set an explicit SameSite policy</span>
+<span class="pill st-warn">medium</span>
+</summary><div class="body">
+<p class="detail">1 of 1 cookie(s) miss it: tracker.</p>
+<p class="rec"><strong>What to do</strong> Set SameSite=Lax or Strict to blunt cross-site request forgery.</p>
+<pre class="evidence">{
+  &quot;offending&quot;: [
+    &quot;tracker&quot;
+  ],
+  &quot;total&quot;: 1
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Cookies" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-low" data-status="warn" data-search="blog.northwind.example permissions-policy restricts powerful features no permissions-policy header is set. headers">
+<summary>
+<span class="status st-warn">warn</span>
+<span class="ftitle">Permissions-Policy restricts powerful features</span>
+</summary><div class="body">
+<p class="detail">No Permissions-Policy header is set.</p>
+<p class="rec"><strong>What to do</strong> Add a Permissions-Policy that disables features the site does not use (camera, microphone, geolocation, etc.).</p>
+<pre class="evidence">{
+  &quot;present&quot;: false
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/Permissions-Policy" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-low" data-status="warn" data-search="blog.northwind.example a caa record restricts certificate issuance no caa record was found, so any ca may issue certificates for this domain. dns">
+<summary>
+<span class="status st-warn">warn</span>
+<span class="ftitle">A CAA record restricts certificate issuance</span>
+</summary><div class="body">
+<p class="detail">No CAA record was found, so any CA may issue certificates for this domain.</p>
+<p class="rec"><strong>What to do</strong> Publish a CAA record naming only the CAs you use, so no other CA can mis-issue a certificate for your domain.</p>
+<pre class="evidence">{
+  &quot;records&quot;: []
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/Security/Practical_implementation_guides/CAA" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-low" data-status="warn" data-search="blog.northwind.example the zone is signed with dnssec the zone is not dnssec-validated according to cloudflare-dns.com. dns">
+<summary>
+<span class="status st-warn">warn</span>
+<span class="ftitle">The zone is signed with DNSSEC</span>
+</summary><div class="body">
+<p class="detail">The zone is not DNSSEC-validated according to cloudflare-dns.com.</p>
+<p class="rec"><strong>What to do</strong> Enable DNSSEC signing at your DNS provider and publish the DS record at the registrar, so responses cannot be forged in transit.</p>
+<pre class="evidence">{
+  &quot;authenticatedData&quot;: false,
+  &quot;resolver&quot;: &quot;cloudflare-dns.com&quot;
+}</pre>
+<p style="margin:10px 0 0"><a href="https://www.cloudflare.com/dns/dnssec/how-dnssec-works/" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-low" data-status="warn" data-search="blog.northwind.example a dkim signing key is published no dkim key was found at the common selectors probed (google). it may use a custom selector. email">
+<summary>
+<span class="status st-warn">warn</span>
+<span class="ftitle">A DKIM signing key is published</span>
+</summary><div class="body">
+<p class="detail">No DKIM key was found at the common selectors probed (google). It may use a custom selector.</p>
+<p class="rec"><strong>What to do</strong> Confirm DKIM is enabled at your mail provider. DKIM is what lets DMARC survive legitimate forwarding.</p>
+<pre class="evidence">{
+  &quot;probed&quot;: [
+    &quot;google&quot;
+  ]
+}</pre>
+<p style="margin:10px 0 0"><a href="https://dmarc.org/overview/" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-low" data-status="warn" data-search="blog.northwind.example mta-sts enforces tls for inbound mail no mta-sts policy is published. email">
+<summary>
+<span class="status st-warn">warn</span>
+<span class="ftitle">MTA-STS enforces TLS for inbound mail</span>
+</summary><div class="body">
+<p class="detail">No MTA-STS policy is published.</p>
+<p class="rec"><strong>What to do</strong> Publish an MTA-STS policy in enforce mode so sending servers require TLS and a valid certificate when delivering to you.</p>
+<pre class="evidence">{
+  &quot;present&quot;: false
+}</pre>
+<p style="margin:10px 0 0"><a href="https://www.rfc-editor.org/rfc/rfc8461" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-low" data-status="warn" data-search="blog.northwind.example tls-rpt requests transport-security reports no tls-rpt record is published. email">
+<summary>
+<span class="status st-warn">warn</span>
+<span class="ftitle">TLS-RPT requests transport-security reports</span>
+</summary><div class="body">
+<p class="detail">No TLS-RPT record is published.</p>
+<p class="rec"><strong>What to do</strong> Publish a TLS-RPT record so you receive reports when senders fail to negotiate TLS.</p>
+<pre class="evidence">{
+  &quot;present&quot;: false
+}</pre>
+<p style="margin:10px 0 0"><a href="https://www.rfc-editor.org/rfc/rfc8460" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-low" data-status="warn" data-search="blog.northwind.example a security.txt tells researchers how to report issues no security.txt was served at /.well-known/security.txt. exposure">
+<summary>
+<span class="status st-warn">warn</span>
+<span class="ftitle">A security.txt tells researchers how to report issues</span>
+</summary><div class="body">
+<p class="detail">No security.txt was served at /.well-known/security.txt.</p>
+<p class="rec"><strong>What to do</strong> Publish /.well-known/security.txt with at least a Contact and an Expires field (RFC 9116), so anyone who finds a flaw knows how to reach you.</p>
+<pre class="evidence">{
+  &quot;present&quot;: false
+}</pre>
+<p style="margin:10px 0 0"><a href="https://www.rfc-editor.org/rfc/rfc9116" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="blog.northwind.example obsolete tls versions are disabled the host declined tls 1.0 and 1.1; strongest negotiated was tlsv1.2. transport">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Obsolete TLS versions are disabled</span>
+</summary><div class="body">
+<p class="detail">The host declined TLS 1.0 and 1.1; strongest negotiated was TLSv1.2.</p>
+<pre class="evidence">{
+  &quot;legacyAccepted&quot;: [],
+  &quot;strongest&quot;: &quot;TLSv1.2&quot;
+}</pre>
+<p style="margin:10px 0 0"><a href="https://ssl-config.mozilla.org/" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="blog.northwind.example certificate chain is trusted and current chain validated against system roots; issued by let&#39;s encrypt. transport">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Certificate chain is trusted and current</span>
+</summary><div class="body">
+<p class="detail">Chain validated against system roots; issued by Let&#39;s Encrypt.</p>
+<pre class="evidence">{
+  &quot;issuer&quot;: &quot;Let&#39;s Encrypt&quot;
+}</pre>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="blog.northwind.example certificate is not near expiry the certificate is valid for another 70 day(s). transport">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Certificate is not near expiry</span>
+</summary><div class="body">
+<p class="detail">The certificate is valid for another 70 day(s).</p>
+<pre class="evidence">{
+  &quot;daysRemaining&quot;: 70,
+  &quot;validTo&quot;: &quot;2026-10-29T05:11:00.918Z&quot;
+}</pre>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="blog.northwind.example certificate key meets modern strength rsa key of 2048 bits. transport">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Certificate key meets modern strength</span>
+</summary><div class="body">
+<p class="detail">RSA key of 2048 bits.</p>
+<pre class="evidence">{
+  &quot;keyBits&quot;: 2048,
+  &quot;keyType&quot;: &quot;RSA&quot;
+}</pre>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="blog.northwind.example negotiated cipher provides forward secrecy negotiated tlsv1.2 with ecdhe-rsa-aes128-gcm-sha256. transport">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Negotiated cipher provides forward secrecy</span>
+</summary><div class="body">
+<p class="detail">Negotiated TLSv1.2 with ECDHE-RSA-AES128-GCM-SHA256.</p>
+<pre class="evidence">{
+  &quot;cipher&quot;: &quot;ECDHE-RSA-AES128-GCM-SHA256&quot;,
+  &quot;protocol&quot;: &quot;TLSv1.2&quot;
+}</pre>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="blog.northwind.example hsts is enabled with a durable max-age hsts present with max-age 15552000. transport">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">HSTS is enabled with a durable max-age</span>
+</summary><div class="body">
+<p class="detail">HSTS present with max-age 15552000.</p>
+<pre class="evidence">{
+  &quot;includeSubDomains&quot;: false,
+  &quot;maxAge&quot;: 15552000,
+  &quot;preload&quot;: false,
+  &quot;present&quot;: true
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="blog.northwind.example x-content-type-options is nosniff nosniff is set. headers">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">X-Content-Type-Options is nosniff</span>
+</summary><div class="body">
+<p class="detail">nosniff is set.</p>
+<pre class="evidence">{
+  &quot;value&quot;: &quot;nosniff&quot;
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/X-Content-Type-Options" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="blog.northwind.example clickjacking protection is present framing is restricted via x-frame-options. headers">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Clickjacking protection is present</span>
+</summary><div class="body">
+<p class="detail">Framing is restricted via X-Frame-Options.</p>
+<pre class="evidence">{
+  &quot;xFrameOptions&quot;: &quot;sameorigin&quot;
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/X-Frame-Options" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="blog.northwind.example referrer-policy avoids leaking full urls referrer-policy is &quot;strict-origin-when-cross-origin&quot;. headers">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Referrer-Policy avoids leaking full URLs</span>
+</summary><div class="body">
+<p class="detail">Referrer-Policy is &quot;strict-origin-when-cross-origin&quot;.</p>
+<pre class="evidence">{
+  &quot;value&quot;: &quot;strict-origin-when-cross-origin&quot;
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/Referrer-Policy" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="blog.northwind.example server does not advertise software versions no precise software versions are advertised in response headers. headers">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Server does not advertise software versions</span>
+</summary><div class="body">
+<p class="detail">No precise software versions are advertised in response headers.</p>
+<pre class="evidence">{
+  &quot;server&quot;: null,
+  &quot;xPoweredBy&quot;: null
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/Server" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="blog.northwind.example cookies are marked secure all 1 cookie(s) satisfy this flag. cookies">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Cookies are marked Secure</span>
+</summary><div class="body">
+<p class="detail">All 1 cookie(s) satisfy this flag.</p>
+<pre class="evidence">{
+  &quot;offending&quot;: [],
+  &quot;total&quot;: 1
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/HTTP/Cookies" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="blog.northwind.example the domain has redundant nameservers 2 authoritative nameserver(s) are published. dns">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">The domain has redundant nameservers</span>
+</summary><div class="body">
+<p class="detail">2 authoritative nameserver(s) are published.</p>
+<pre class="evidence">{
+  &quot;nameservers&quot;: [
+    &quot;ns1.northwind.example&quot;,
+    &quot;ns2.northwind.example&quot;
+  ]
+}</pre>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="blog.northwind.example plain http redirects to https an http request was redirected to https://blog.northwind.example/. exposure">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">Plain HTTP redirects to HTTPS</span>
+</summary><div class="body">
+<p class="detail">An HTTP request was redirected to https://blog.northwind.example/.</p>
+<pre class="evidence">{
+  &quot;finalUrl&quot;: &quot;https://blog.northwind.example/&quot;,
+  &quot;redirected&quot;: true
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/Security/Transport_Layer_Security" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+<details class="finding sev-info" data-status="pass" data-search="blog.northwind.example the homepage loads no resources over plain http no plain-http resource references were found in the homepage markup. exposure">
+<summary>
+<span class="status st-pass">pass</span>
+<span class="ftitle">The homepage loads no resources over plain HTTP</span>
+</summary><div class="body">
+<p class="detail">No plain-HTTP resource references were found in the homepage markup.</p>
+<pre class="evidence">{
+  &quot;references&quot;: [],
+  &quot;truncatedBody&quot;: false
+}</pre>
+<p style="margin:10px 0 0"><a href="https://developer.mozilla.org/docs/Web/Security/Mixed_content" target="_blank" rel="noreferrer noopener">Reference</a></p>
+</div></details>
+</section>
+<footer>Produced by <strong>certadel</strong>, a passive external posture assessor. It inspected only public configuration of the authorized assets and changed nothing. 19 actionable findings across 3 assets.</footer>
+<script>
+(function () {
+  "use strict";
+  var findings = [].slice.call(document.querySelectorAll(".finding"));
+  if (!findings.length) return;
+  var q = document.getElementById("q");
+  var chips = [].slice.call(document.querySelectorAll("#sev input"));
+  var counter = document.getElementById("shown");
+  function apply() {
+    var term = (q && q.value || "").trim().toLowerCase();
+    var allow = {}; chips.forEach(function (c) { allow[c.value] = c.checked; });
+    var n = 0;
+    findings.forEach(function (el) {
+      var okS = allow[el.getAttribute("data-status")] !== false;
+      var okT = !term || (el.getAttribute("data-search") || "").indexOf(term) !== -1;
+      el.hidden = !(okS && okT); if (okS && okT) n++;
+    });
+    [].slice.call(document.querySelectorAll("[data-group]")).forEach(function (h) {
+      var any = false, node = h.nextElementSibling;
+      while (node && node.classList && node.classList.contains("finding")) {
+        if (!node.hidden) { any = true; break; } node = node.nextElementSibling;
+      }
+      h.hidden = !any;
+    });
+    if (counter) counter.textContent = n === findings.length ? findings.length + " findings" : n + " of " + findings.length + " findings";
+  }
+  if (q) q.addEventListener("input", apply);
+  chips.forEach(function (c) { c.addEventListener("change", apply); });
+  window.addEventListener("beforeprint", function () { findings.forEach(function (el) { if (!el.hidden) el.open = true; }); });
+  apply();
+})();
+</script>
+</main></body></html>

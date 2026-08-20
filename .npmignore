@@ -1,0 +1,8 @@
+test/
+docs/
+examples/
+.github/
+tsconfig.json
+.editorconfig
+CONTRIBUTING.md
+CHANGELOG.md

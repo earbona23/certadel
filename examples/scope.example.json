@@ -1,0 +1,10 @@
+{
+  "organization": "Example Corp",
+  "authorizedBy": "security@example.com",
+  "reference": "ENG-2026-014",
+  "assets": [
+    "example.com",
+    "www.example.com",
+    "api.example.com"
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "name": "certadel",
+  "version": "1.0.0",
+  "description": "Authorized, passive external security-posture assessment and certification for a company's internet-facing assets. Grades TLS, HTTP security headers, cookies, DNS hygiene and email authentication against a transparent rubric, then issues a leveled certificate, an HTML report, an SVG badge and machine-readable JSON. Zero runtime dependencies. Never exploits, never writes, only inspects what you authorize.",
+  "type": "module",
+  "bin": {
+    "certadel": "bin/cli.js"
+  },
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=18.17.0"
+  },
+  "scripts": {
+    "test": "node --test",
+    "typecheck": "tsc --noEmit",
+    "lint": "node --test && tsc --noEmit"
+  },
+  "keywords": [
+    "security",
+    "audit",
+    "certification",
+    "attack-surface",
+    "posture",
+    "tls",
+    "ssl",
+    "security-headers",
+    "csp",
+    "hsts",
+    "dmarc",
+    "spf",
+    "dkim",
+    "dns",
+    "dnssec",
+    "mta-sts",
+    "pentest",
+    "compliance",
+    "scorecard",
+    "cli",
+    "zero-dependency",
+    "devsecops"
+  ],
+  "author": "Eduard Arbona",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/earbona23/certadel.git"
+  },
+  "homepage": "https://github.com/earbona23/certadel#readme",
+  "bugs": {
+    "url": "https://github.com/earbona23/certadel/issues"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.1",
+    "typescript": "^5.6.0"
+  }
+}

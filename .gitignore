@@ -1,0 +1,25 @@
+node_modules/
+# Real assessment output carries live tenant data (hostnames, banners, records).
+# Never commit it by accident.
+/out/
+/report/
+*-report.json
+certadel-report.json
+certadel-certificate.html
+certadel-badge.svg
+# ...but the synthetic sample under docs/images/ is committed on purpose.
+!docs/images/sample-report.json
+
+# Never commit a real scope file; it names live infrastructure. The example is fine.
+/scope.json
+!examples/scope.example.json
+
+# Secrets / local
+.env
+*.pem
+!test/fixtures/*.pem
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

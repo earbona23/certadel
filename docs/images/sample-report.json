@@ -1,0 +1,1426 @@
+{
+  "tool": "certadel",
+  "toolVersion": "1.0.0",
+  "generatedAt": "2026-03-14T09:41:00Z",
+  "organization": "Northwind Retail Group",
+  "authorizedBy": "ciso@northwind.example",
+  "reference": "ENG-2026-014",
+  "rollup": {
+    "score": 84.1,
+    "tier": "bronze",
+    "tierLabel": "Bronze",
+    "weakest": "blog.northwind.example",
+    "certified": true
+  },
+  "assets": [
+    {
+      "host": "shop.northwind.example",
+      "score": 100,
+      "tier": "platinum",
+      "tierLabel": "Platinum",
+      "certified": true,
+      "gated": false,
+      "gateReason": null,
+      "failures": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "dimensions": [
+        {
+          "dimension": "transport",
+          "label": "Transport security (TLS)",
+          "earned": 40,
+          "max": 40,
+          "percent": 100,
+          "checks": 6,
+          "skipped": 0
+        },
+        {
+          "dimension": "headers",
+          "label": "HTTP security headers",
+          "earned": 23,
+          "max": 23,
+          "percent": 100,
+          "checks": 6,
+          "skipped": 0
+        },
+        {
+          "dimension": "cookies",
+          "label": "Cookie flags",
+          "earned": 22,
+          "max": 22,
+          "percent": 100,
+          "checks": 3,
+          "skipped": 0
+        },
+        {
+          "dimension": "dns",
+          "label": "DNS & domain hygiene",
+          "earned": 12,
+          "max": 12,
+          "percent": 100,
+          "checks": 3,
+          "skipped": 0
+        },
+        {
+          "dimension": "email",
+          "label": "Email authentication",
+          "earned": 25,
+          "max": 25,
+          "percent": 100,
+          "checks": 5,
+          "skipped": 0
+        },
+        {
+          "dimension": "exposure",
+          "label": "Exposure & hygiene",
+          "earned": 10,
+          "max": 10,
+          "percent": 100,
+          "checks": 3,
+          "skipped": 0
+        }
+      ],
+      "findings": [
+        {
+          "id": "tls-protocol-versions",
+          "title": "Obsolete TLS versions are disabled",
+          "dimension": "transport",
+          "status": "pass",
+          "severity": "info",
+          "earned": 10,
+          "max": 10,
+          "detail": "The host declined TLS 1.0 and 1.1; strongest negotiated was TLSv1.3.",
+          "reference": "https://ssl-config.mozilla.org/",
+          "evidence": {
+            "strongest": "TLSv1.3",
+            "legacyAccepted": []
+          }
+        },
+        {
+          "id": "tls-certificate-valid",
+          "title": "Certificate chain is trusted and current",
+          "dimension": "transport",
+          "status": "pass",
+          "severity": "info",
+          "earned": 12,
+          "max": 12,
+          "detail": "Chain validated against system roots; issued by Let's Encrypt.",
+          "evidence": {
+            "issuer": "Let's Encrypt"
+          }
+        },
+        {
+          "id": "tls-certificate-expiry",
+          "title": "Certificate is not near expiry",
+          "dimension": "transport",
+          "status": "pass",
+          "severity": "info",
+          "earned": 4,
+          "max": 4,
+          "detail": "The certificate is valid for another 70 day(s).",
+          "evidence": {
+            "validTo": "2026-10-29T05:11:00.915Z",
+            "daysRemaining": 70
+          }
+        },
+        {
+          "id": "tls-key-strength",
+          "title": "Certificate key meets modern strength",
+          "dimension": "transport",
+          "status": "pass",
+          "severity": "info",
+          "earned": 6,
+          "max": 6,
+          "detail": "EC key of 256 bits.",
+          "evidence": {
+            "keyType": "EC",
+            "keyBits": 256
+          }
+        },
+        {
+          "id": "tls-forward-secrecy",
+          "title": "Negotiated cipher provides forward secrecy",
+          "dimension": "transport",
+          "status": "pass",
+          "severity": "info",
+          "earned": 4,
+          "max": 4,
+          "detail": "Negotiated TLSv1.3 with TLS_AES_256_GCM_SHA384.",
+          "evidence": {
+            "protocol": "TLSv1.3",
+            "cipher": "TLS_AES_256_GCM_SHA384"
+          }
+        },
+        {
+          "id": "tls-hsts",
+          "title": "HSTS is enabled with a durable max-age",
+          "dimension": "transport",
+          "status": "pass",
+          "severity": "info",
+          "earned": 4,
+          "max": 4,
+          "detail": "HSTS present with max-age 63072000, includeSubDomains, preload.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security",
+          "evidence": {
+            "present": true,
+            "maxAge": 63072000,
+            "includeSubDomains": true,
+            "preload": true
+          }
+        },
+        {
+          "id": "header-csp",
+          "title": "Content-Security-Policy is present",
+          "dimension": "headers",
+          "status": "pass",
+          "severity": "info",
+          "earned": 7,
+          "max": 7,
+          "detail": "A Content-Security-Policy is present with no obvious script-source weakening.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/Content-Security-Policy",
+          "evidence": {
+            "directives": [
+              "default-src",
+              "object-src",
+              "frame-ancestors",
+              "base-uri"
+            ]
+          }
+        },
+        {
+          "id": "header-content-type-options",
+          "title": "X-Content-Type-Options is nosniff",
+          "dimension": "headers",
+          "status": "pass",
+          "severity": "info",
+          "earned": 3,
+          "max": 3,
+          "detail": "nosniff is set.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/X-Content-Type-Options",
+          "evidence": {
+            "value": "nosniff"
+          }
+        },
+        {
+          "id": "header-framing",
+          "title": "Clickjacking protection is present",
+          "dimension": "headers",
+          "status": "pass",
+          "severity": "info",
+          "earned": 4,
+          "max": 4,
+          "detail": "Framing is restricted via CSP frame-ancestors.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/X-Frame-Options",
+          "evidence": {
+            "xFrameOptions": null,
+            "cspFrameAncestors": true
+          }
+        },
+        {
+          "id": "header-referrer-policy",
+          "title": "Referrer-Policy avoids leaking full URLs",
+          "dimension": "headers",
+          "status": "pass",
+          "severity": "info",
+          "earned": 3,
+          "max": 3,
+          "detail": "Referrer-Policy is \"strict-origin-when-cross-origin\".",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/Referrer-Policy",
+          "evidence": {
+            "value": "strict-origin-when-cross-origin"
+          }
+        },
+        {
+          "id": "header-permissions-policy",
+          "title": "Permissions-Policy restricts powerful features",
+          "dimension": "headers",
+          "status": "pass",
+          "severity": "info",
+          "earned": 3,
+          "max": 3,
+          "detail": "A Permissions-Policy header is present.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/Permissions-Policy",
+          "evidence": {
+            "present": true
+          }
+        },
+        {
+          "id": "header-version-disclosure",
+          "title": "Server does not advertise software versions",
+          "dimension": "headers",
+          "status": "pass",
+          "severity": "info",
+          "earned": 3,
+          "max": 3,
+          "detail": "No precise software versions are advertised in response headers.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/Server",
+          "evidence": {
+            "server": null,
+            "xPoweredBy": null
+          }
+        },
+        {
+          "id": "cookie-secure",
+          "title": "Cookies are marked Secure",
+          "dimension": "cookies",
+          "status": "pass",
+          "severity": "info",
+          "earned": 8,
+          "max": 8,
+          "detail": "All 1 cookie(s) satisfy this flag.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Cookies",
+          "evidence": {
+            "offending": [],
+            "total": 1
+          }
+        },
+        {
+          "id": "cookie-httponly",
+          "title": "Session cookies are marked HttpOnly",
+          "dimension": "cookies",
+          "status": "pass",
+          "severity": "info",
+          "earned": 8,
+          "max": 8,
+          "detail": "All 1 cookie(s) satisfy this flag.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Cookies",
+          "evidence": {
+            "offending": [],
+            "total": 1
+          }
+        },
+        {
+          "id": "cookie-samesite",
+          "title": "Cookies set an explicit SameSite policy",
+          "dimension": "cookies",
+          "status": "pass",
+          "severity": "info",
+          "earned": 6,
+          "max": 6,
+          "detail": "All 1 cookie(s) satisfy this flag.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Cookies",
+          "evidence": {
+            "offending": [],
+            "total": 1
+          }
+        },
+        {
+          "id": "dns-caa",
+          "title": "A CAA record restricts certificate issuance",
+          "dimension": "dns",
+          "status": "pass",
+          "severity": "info",
+          "earned": 4,
+          "max": 4,
+          "detail": "CAA present, authorising: letsencrypt.org.",
+          "reference": "https://developer.mozilla.org/docs/Web/Security/Practical_implementation_guides/CAA",
+          "evidence": {
+            "records": [
+              {
+                "critical": 0,
+                "issue": "letsencrypt.org",
+                "value": "letsencrypt.org"
+              }
+            ]
+          }
+        },
+        {
+          "id": "dns-ns-redundancy",
+          "title": "The domain has redundant nameservers",
+          "dimension": "dns",
+          "status": "pass",
+          "severity": "info",
+          "earned": 3,
+          "max": 3,
+          "detail": "2 authoritative nameserver(s) are published.",
+          "evidence": {
+            "nameservers": [
+              "ns1.northwind.example",
+              "ns2.northwind.example"
+            ]
+          }
+        },
+        {
+          "id": "dns-dnssec",
+          "title": "The zone is signed with DNSSEC",
+          "dimension": "dns",
+          "status": "pass",
+          "severity": "info",
+          "earned": 5,
+          "max": 5,
+          "detail": "A validating resolver (cloudflare-dns.com) returned authenticated data for this zone.",
+          "reference": "https://www.cloudflare.com/dns/dnssec/how-dnssec-works/",
+          "evidence": {
+            "authenticatedData": true,
+            "resolver": "cloudflare-dns.com"
+          }
+        },
+        {
+          "id": "email-spf",
+          "title": "SPF authorises legitimate senders and rejects the rest",
+          "dimension": "email",
+          "status": "pass",
+          "severity": "info",
+          "earned": 7,
+          "max": 7,
+          "detail": "A single SPF record ends in -all (hard fail for unlisted senders).",
+          "reference": "https://dmarc.org/overview/",
+          "evidence": {
+            "qualifier": "-",
+            "lookups": 2
+          }
+        },
+        {
+          "id": "email-dmarc",
+          "title": "DMARC is published with an enforcing policy",
+          "dimension": "email",
+          "status": "pass",
+          "severity": "info",
+          "earned": 10,
+          "max": 10,
+          "detail": "DMARC p=reject with aggregate reporting.",
+          "reference": "https://dmarc.org/overview/",
+          "evidence": {
+            "version": "DMARC1",
+            "policy": "reject",
+            "subdomainPolicy": null,
+            "pct": 100,
+            "rua": "mailto:dmarc@northwind.example",
+            "ruf": null
+          }
+        },
+        {
+          "id": "email-dkim",
+          "title": "A DKIM signing key is published",
+          "dimension": "email",
+          "status": "pass",
+          "severity": "info",
+          "earned": 4,
+          "max": 4,
+          "detail": "A DKIM key was found at selector(s): google.",
+          "evidence": {
+            "selectors": [
+              "google"
+            ]
+          }
+        },
+        {
+          "id": "email-mta-sts",
+          "title": "MTA-STS enforces TLS for inbound mail",
+          "dimension": "email",
+          "status": "pass",
+          "severity": "info",
+          "earned": 3,
+          "max": 3,
+          "detail": "MTA-STS is published in enforce mode.",
+          "reference": "https://www.rfc-editor.org/rfc/rfc8461",
+          "evidence": {
+            "mode": "enforce"
+          }
+        },
+        {
+          "id": "email-tls-rpt",
+          "title": "TLS-RPT requests transport-security reports",
+          "dimension": "email",
+          "status": "pass",
+          "severity": "info",
+          "earned": 1,
+          "max": 1,
+          "detail": "A TLS-RPT record is published.",
+          "reference": "https://www.rfc-editor.org/rfc/rfc8460",
+          "evidence": {
+            "present": true
+          }
+        },
+        {
+          "id": "exposure-https-redirect",
+          "title": "Plain HTTP redirects to HTTPS",
+          "dimension": "exposure",
+          "status": "pass",
+          "severity": "info",
+          "earned": 4,
+          "max": 4,
+          "detail": "An HTTP request was redirected to https://shop.northwind.example/.",
+          "reference": "https://developer.mozilla.org/docs/Web/Security/Transport_Layer_Security",
+          "evidence": {
+            "finalUrl": "https://shop.northwind.example/",
+            "redirected": true
+          }
+        },
+        {
+          "id": "exposure-security-txt",
+          "title": "A security.txt tells researchers how to report issues",
+          "dimension": "exposure",
+          "status": "pass",
+          "severity": "info",
+          "earned": 3,
+          "max": 3,
+          "detail": "A security.txt is present with Contact and Expires fields.",
+          "reference": "https://www.rfc-editor.org/rfc/rfc9116",
+          "evidence": {
+            "hasContact": true,
+            "hasExpires": true
+          }
+        },
+        {
+          "id": "exposure-mixed-content",
+          "title": "The homepage loads no resources over plain HTTP",
+          "dimension": "exposure",
+          "status": "pass",
+          "severity": "info",
+          "earned": 3,
+          "max": 3,
+          "detail": "No plain-HTTP resource references were found in the homepage markup.",
+          "reference": "https://developer.mozilla.org/docs/Web/Security/Mixed_content",
+          "evidence": {
+            "references": [],
+            "truncatedBody": false
+          }
+        }
+      ]
+    },
+    {
+      "host": "api.northwind.example",
+      "score": 87.9,
+      "tier": "gold",
+      "tierLabel": "Gold",
+      "certified": true,
+      "gated": false,
+      "gateReason": null,
+      "failures": {
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "low": 0
+      },
+      "dimensions": [
+        {
+          "dimension": "transport",
+          "label": "Transport security (TLS)",
+          "earned": 40,
+          "max": 40,
+          "percent": 100,
+          "checks": 6,
+          "skipped": 0
+        },
+        {
+          "dimension": "headers",
+          "label": "HTTP security headers",
+          "earned": 14,
+          "max": 23,
+          "percent": 60.9,
+          "checks": 6,
+          "skipped": 0
+        },
+        {
+          "dimension": "cookies",
+          "label": "Cookie flags",
+          "earned": 22,
+          "max": 22,
+          "percent": 100,
+          "checks": 3,
+          "skipped": 0
+        },
+        {
+          "dimension": "dns",
+          "label": "DNS & domain hygiene",
+          "earned": 10,
+          "max": 12,
+          "percent": 83.3,
+          "checks": 3,
+          "skipped": 0
+        },
+        {
+          "dimension": "email",
+          "label": "Email authentication",
+          "earned": 21,
+          "max": 25,
+          "percent": 84,
+          "checks": 5,
+          "skipped": 0
+        },
+        {
+          "dimension": "exposure",
+          "label": "Exposure & hygiene",
+          "earned": 9,
+          "max": 10,
+          "percent": 90,
+          "checks": 3,
+          "skipped": 0
+        }
+      ],
+      "findings": [
+        {
+          "id": "tls-protocol-versions",
+          "title": "Obsolete TLS versions are disabled",
+          "dimension": "transport",
+          "status": "pass",
+          "severity": "info",
+          "earned": 10,
+          "max": 10,
+          "detail": "The host declined TLS 1.0 and 1.1; strongest negotiated was TLSv1.3.",
+          "reference": "https://ssl-config.mozilla.org/",
+          "evidence": {
+            "strongest": "TLSv1.3",
+            "legacyAccepted": []
+          }
+        },
+        {
+          "id": "tls-certificate-valid",
+          "title": "Certificate chain is trusted and current",
+          "dimension": "transport",
+          "status": "pass",
+          "severity": "info",
+          "earned": 12,
+          "max": 12,
+          "detail": "Chain validated against system roots; issued by Let's Encrypt.",
+          "evidence": {
+            "issuer": "Let's Encrypt"
+          }
+        },
+        {
+          "id": "tls-certificate-expiry",
+          "title": "Certificate is not near expiry",
+          "dimension": "transport",
+          "status": "pass",
+          "severity": "info",
+          "earned": 4,
+          "max": 4,
+          "detail": "The certificate is valid for another 70 day(s).",
+          "evidence": {
+            "validTo": "2026-10-29T05:11:00.918Z",
+            "daysRemaining": 70
+          }
+        },
+        {
+          "id": "tls-key-strength",
+          "title": "Certificate key meets modern strength",
+          "dimension": "transport",
+          "status": "pass",
+          "severity": "info",
+          "earned": 6,
+          "max": 6,
+          "detail": "EC key of 256 bits.",
+          "evidence": {
+            "keyType": "EC",
+            "keyBits": 256
+          }
+        },
+        {
+          "id": "tls-forward-secrecy",
+          "title": "Negotiated cipher provides forward secrecy",
+          "dimension": "transport",
+          "status": "pass",
+          "severity": "info",
+          "earned": 4,
+          "max": 4,
+          "detail": "Negotiated TLSv1.3 with TLS_AES_256_GCM_SHA384.",
+          "evidence": {
+            "protocol": "TLSv1.3",
+            "cipher": "TLS_AES_256_GCM_SHA384"
+          }
+        },
+        {
+          "id": "tls-hsts",
+          "title": "HSTS is enabled with a durable max-age",
+          "dimension": "transport",
+          "status": "pass",
+          "severity": "info",
+          "earned": 4,
+          "max": 4,
+          "detail": "HSTS present with max-age 63072000, includeSubDomains, preload.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security",
+          "evidence": {
+            "present": true,
+            "maxAge": 63072000,
+            "includeSubDomains": true,
+            "preload": true
+          }
+        },
+        {
+          "id": "header-csp",
+          "title": "Content-Security-Policy is present",
+          "dimension": "headers",
+          "status": "warn",
+          "severity": "medium",
+          "earned": 4,
+          "max": 7,
+          "detail": "CSP present but weakened: script-src allows 'unsafe-inline'.",
+          "remediation": "Remove 'unsafe-inline' and 'unsafe-eval' from script-src and avoid wildcard sources; adopt nonces or hashes for inline scripts.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/Content-Security-Policy",
+          "evidence": {
+            "weaknesses": [
+              "script-src allows 'unsafe-inline'"
+            ]
+          }
+        },
+        {
+          "id": "header-content-type-options",
+          "title": "X-Content-Type-Options is nosniff",
+          "dimension": "headers",
+          "status": "pass",
+          "severity": "info",
+          "earned": 3,
+          "max": 3,
+          "detail": "nosniff is set.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/X-Content-Type-Options",
+          "evidence": {
+            "value": "nosniff"
+          }
+        },
+        {
+          "id": "header-framing",
+          "title": "Clickjacking protection is present",
+          "dimension": "headers",
+          "status": "fail",
+          "severity": "medium",
+          "earned": 0,
+          "max": 4,
+          "detail": "Neither CSP frame-ancestors nor a restrictive X-Frame-Options is set.",
+          "remediation": "Set CSP frame-ancestors 'self' (preferred) or X-Frame-Options: SAMEORIGIN.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/X-Frame-Options",
+          "evidence": {
+            "xFrameOptions": null,
+            "cspFrameAncestors": false
+          }
+        },
+        {
+          "id": "header-referrer-policy",
+          "title": "Referrer-Policy avoids leaking full URLs",
+          "dimension": "headers",
+          "status": "pass",
+          "severity": "info",
+          "earned": 3,
+          "max": 3,
+          "detail": "Referrer-Policy is \"strict-origin-when-cross-origin\".",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/Referrer-Policy",
+          "evidence": {
+            "value": "strict-origin-when-cross-origin"
+          }
+        },
+        {
+          "id": "header-permissions-policy",
+          "title": "Permissions-Policy restricts powerful features",
+          "dimension": "headers",
+          "status": "warn",
+          "severity": "low",
+          "earned": 2,
+          "max": 3,
+          "detail": "No Permissions-Policy header is set.",
+          "remediation": "Add a Permissions-Policy that disables features the site does not use (camera, microphone, geolocation, etc.).",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/Permissions-Policy",
+          "evidence": {
+            "present": false
+          }
+        },
+        {
+          "id": "header-version-disclosure",
+          "title": "Server does not advertise software versions",
+          "dimension": "headers",
+          "status": "warn",
+          "severity": "low",
+          "earned": 2,
+          "max": 3,
+          "detail": "Version information is disclosed: nginx/1.24.0.",
+          "remediation": "Suppress version detail in the Server header and remove X-Powered-By. It hands an attacker a shortlist of version-specific exploits for free.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/Server",
+          "evidence": {
+            "server": "nginx/1.24.0",
+            "xPoweredBy": null
+          }
+        },
+        {
+          "id": "cookie-secure",
+          "title": "Cookies are marked Secure",
+          "dimension": "cookies",
+          "status": "pass",
+          "severity": "info",
+          "earned": 8,
+          "max": 8,
+          "detail": "All 1 cookie(s) satisfy this flag.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Cookies",
+          "evidence": {
+            "offending": [],
+            "total": 1
+          }
+        },
+        {
+          "id": "cookie-httponly",
+          "title": "Session cookies are marked HttpOnly",
+          "dimension": "cookies",
+          "status": "pass",
+          "severity": "info",
+          "earned": 8,
+          "max": 8,
+          "detail": "All 1 cookie(s) satisfy this flag.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Cookies",
+          "evidence": {
+            "offending": [],
+            "total": 1
+          }
+        },
+        {
+          "id": "cookie-samesite",
+          "title": "Cookies set an explicit SameSite policy",
+          "dimension": "cookies",
+          "status": "pass",
+          "severity": "info",
+          "earned": 6,
+          "max": 6,
+          "detail": "All 1 cookie(s) satisfy this flag.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Cookies",
+          "evidence": {
+            "offending": [],
+            "total": 1
+          }
+        },
+        {
+          "id": "dns-caa",
+          "title": "A CAA record restricts certificate issuance",
+          "dimension": "dns",
+          "status": "pass",
+          "severity": "info",
+          "earned": 4,
+          "max": 4,
+          "detail": "CAA present, authorising: letsencrypt.org.",
+          "reference": "https://developer.mozilla.org/docs/Web/Security/Practical_implementation_guides/CAA",
+          "evidence": {
+            "records": [
+              {
+                "critical": 0,
+                "issue": "letsencrypt.org",
+                "value": "letsencrypt.org"
+              }
+            ]
+          }
+        },
+        {
+          "id": "dns-ns-redundancy",
+          "title": "The domain has redundant nameservers",
+          "dimension": "dns",
+          "status": "pass",
+          "severity": "info",
+          "earned": 3,
+          "max": 3,
+          "detail": "2 authoritative nameserver(s) are published.",
+          "evidence": {
+            "nameservers": [
+              "ns1.northwind.example",
+              "ns2.northwind.example"
+            ]
+          }
+        },
+        {
+          "id": "dns-dnssec",
+          "title": "The zone is signed with DNSSEC",
+          "dimension": "dns",
+          "status": "warn",
+          "severity": "low",
+          "earned": 3,
+          "max": 5,
+          "detail": "The zone is not DNSSEC-validated according to cloudflare-dns.com.",
+          "remediation": "Enable DNSSEC signing at your DNS provider and publish the DS record at the registrar, so responses cannot be forged in transit.",
+          "reference": "https://www.cloudflare.com/dns/dnssec/how-dnssec-works/",
+          "evidence": {
+            "authenticatedData": false,
+            "resolver": "cloudflare-dns.com"
+          }
+        },
+        {
+          "id": "email-spf",
+          "title": "SPF authorises legitimate senders and rejects the rest",
+          "dimension": "email",
+          "status": "pass",
+          "severity": "info",
+          "earned": 7,
+          "max": 7,
+          "detail": "A single SPF record ends in -all (hard fail for unlisted senders).",
+          "reference": "https://dmarc.org/overview/",
+          "evidence": {
+            "qualifier": "-",
+            "lookups": 2
+          }
+        },
+        {
+          "id": "email-dmarc",
+          "title": "DMARC is published with an enforcing policy",
+          "dimension": "email",
+          "status": "warn",
+          "severity": "medium",
+          "earned": 6,
+          "max": 10,
+          "detail": "DMARC p=quarantine; forged mail is quarantined but not rejected outright.",
+          "remediation": "Advance to p=reject once quarantine has shown no false positives.",
+          "reference": "https://dmarc.org/overview/",
+          "evidence": {
+            "version": "DMARC1",
+            "policy": "quarantine",
+            "subdomainPolicy": null,
+            "pct": 100,
+            "rua": "mailto:dmarc@northwind.example",
+            "ruf": null
+          }
+        },
+        {
+          "id": "email-dkim",
+          "title": "A DKIM signing key is published",
+          "dimension": "email",
+          "status": "pass",
+          "severity": "info",
+          "earned": 4,
+          "max": 4,
+          "detail": "A DKIM key was found at selector(s): google.",
+          "evidence": {
+            "selectors": [
+              "google"
+            ]
+          }
+        },
+        {
+          "id": "email-mta-sts",
+          "title": "MTA-STS enforces TLS for inbound mail",
+          "dimension": "email",
+          "status": "pass",
+          "severity": "info",
+          "earned": 3,
+          "max": 3,
+          "detail": "MTA-STS is published in enforce mode.",
+          "reference": "https://www.rfc-editor.org/rfc/rfc8461",
+          "evidence": {
+            "mode": "enforce"
+          }
+        },
+        {
+          "id": "email-tls-rpt",
+          "title": "TLS-RPT requests transport-security reports",
+          "dimension": "email",
+          "status": "pass",
+          "severity": "info",
+          "earned": 1,
+          "max": 1,
+          "detail": "A TLS-RPT record is published.",
+          "reference": "https://www.rfc-editor.org/rfc/rfc8460",
+          "evidence": {
+            "present": true
+          }
+        },
+        {
+          "id": "exposure-https-redirect",
+          "title": "Plain HTTP redirects to HTTPS",
+          "dimension": "exposure",
+          "status": "pass",
+          "severity": "info",
+          "earned": 4,
+          "max": 4,
+          "detail": "An HTTP request was redirected to https://api.northwind.example/.",
+          "reference": "https://developer.mozilla.org/docs/Web/Security/Transport_Layer_Security",
+          "evidence": {
+            "finalUrl": "https://api.northwind.example/",
+            "redirected": true
+          }
+        },
+        {
+          "id": "exposure-security-txt",
+          "title": "A security.txt tells researchers how to report issues",
+          "dimension": "exposure",
+          "status": "warn",
+          "severity": "low",
+          "earned": 2,
+          "max": 3,
+          "detail": "No security.txt was served at /.well-known/security.txt.",
+          "remediation": "Publish /.well-known/security.txt with at least a Contact and an Expires field (RFC 9116), so anyone who finds a flaw knows how to reach you.",
+          "reference": "https://www.rfc-editor.org/rfc/rfc9116",
+          "evidence": {
+            "present": false
+          }
+        },
+        {
+          "id": "exposure-mixed-content",
+          "title": "The homepage loads no resources over plain HTTP",
+          "dimension": "exposure",
+          "status": "pass",
+          "severity": "info",
+          "earned": 3,
+          "max": 3,
+          "detail": "No plain-HTTP resource references were found in the homepage markup.",
+          "reference": "https://developer.mozilla.org/docs/Web/Security/Mixed_content",
+          "evidence": {
+            "references": [],
+            "truncatedBody": false
+          }
+        }
+      ]
+    },
+    {
+      "host": "blog.northwind.example",
+      "score": 64.4,
+      "tier": "bronze",
+      "tierLabel": "Bronze",
+      "certified": true,
+      "gated": false,
+      "gateReason": null,
+      "failures": {
+        "critical": 0,
+        "high": 3,
+        "medium": 2,
+        "low": 0
+      },
+      "dimensions": [
+        {
+          "dimension": "transport",
+          "label": "Transport security (TLS)",
+          "earned": 40,
+          "max": 40,
+          "percent": 100,
+          "checks": 6,
+          "skipped": 0
+        },
+        {
+          "dimension": "headers",
+          "label": "HTTP security headers",
+          "earned": 15,
+          "max": 23,
+          "percent": 65.2,
+          "checks": 6,
+          "skipped": 0
+        },
+        {
+          "dimension": "cookies",
+          "label": "Cookie flags",
+          "earned": 8,
+          "max": 22,
+          "percent": 36.4,
+          "checks": 3,
+          "skipped": 0
+        },
+        {
+          "dimension": "dns",
+          "label": "DNS & domain hygiene",
+          "earned": 8,
+          "max": 12,
+          "percent": 66.7,
+          "checks": 3,
+          "skipped": 0
+        },
+        {
+          "dimension": "email",
+          "label": "Email authentication",
+          "earned": 5,
+          "max": 25,
+          "percent": 20,
+          "checks": 5,
+          "skipped": 0
+        },
+        {
+          "dimension": "exposure",
+          "label": "Exposure & hygiene",
+          "earned": 9,
+          "max": 10,
+          "percent": 90,
+          "checks": 3,
+          "skipped": 0
+        }
+      ],
+      "findings": [
+        {
+          "id": "tls-protocol-versions",
+          "title": "Obsolete TLS versions are disabled",
+          "dimension": "transport",
+          "status": "pass",
+          "severity": "info",
+          "earned": 10,
+          "max": 10,
+          "detail": "The host declined TLS 1.0 and 1.1; strongest negotiated was TLSv1.2.",
+          "reference": "https://ssl-config.mozilla.org/",
+          "evidence": {
+            "strongest": "TLSv1.2",
+            "legacyAccepted": []
+          }
+        },
+        {
+          "id": "tls-certificate-valid",
+          "title": "Certificate chain is trusted and current",
+          "dimension": "transport",
+          "status": "pass",
+          "severity": "info",
+          "earned": 12,
+          "max": 12,
+          "detail": "Chain validated against system roots; issued by Let's Encrypt.",
+          "evidence": {
+            "issuer": "Let's Encrypt"
+          }
+        },
+        {
+          "id": "tls-certificate-expiry",
+          "title": "Certificate is not near expiry",
+          "dimension": "transport",
+          "status": "pass",
+          "severity": "info",
+          "earned": 4,
+          "max": 4,
+          "detail": "The certificate is valid for another 70 day(s).",
+          "evidence": {
+            "validTo": "2026-10-29T05:11:00.918Z",
+            "daysRemaining": 70
+          }
+        },
+        {
+          "id": "tls-key-strength",
+          "title": "Certificate key meets modern strength",
+          "dimension": "transport",
+          "status": "pass",
+          "severity": "info",
+          "earned": 6,
+          "max": 6,
+          "detail": "RSA key of 2048 bits.",
+          "evidence": {
+            "keyType": "RSA",
+            "keyBits": 2048
+          }
+        },
+        {
+          "id": "tls-forward-secrecy",
+          "title": "Negotiated cipher provides forward secrecy",
+          "dimension": "transport",
+          "status": "pass",
+          "severity": "info",
+          "earned": 4,
+          "max": 4,
+          "detail": "Negotiated TLSv1.2 with ECDHE-RSA-AES128-GCM-SHA256.",
+          "evidence": {
+            "protocol": "TLSv1.2",
+            "cipher": "ECDHE-RSA-AES128-GCM-SHA256"
+          }
+        },
+        {
+          "id": "tls-hsts",
+          "title": "HSTS is enabled with a durable max-age",
+          "dimension": "transport",
+          "status": "pass",
+          "severity": "info",
+          "earned": 4,
+          "max": 4,
+          "detail": "HSTS present with max-age 15552000.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security",
+          "evidence": {
+            "present": true,
+            "maxAge": 15552000,
+            "includeSubDomains": false,
+            "preload": false
+          }
+        },
+        {
+          "id": "header-csp",
+          "title": "Content-Security-Policy is present",
+          "dimension": "headers",
+          "status": "fail",
+          "severity": "high",
+          "earned": 0,
+          "max": 7,
+          "detail": "No Content-Security-Policy header was returned.",
+          "remediation": "Add a Content-Security-Policy. Even a conservative policy that sets default-src 'self' and object-src 'none' materially reduces XSS impact.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/Content-Security-Policy",
+          "evidence": {
+            "present": false
+          }
+        },
+        {
+          "id": "header-content-type-options",
+          "title": "X-Content-Type-Options is nosniff",
+          "dimension": "headers",
+          "status": "pass",
+          "severity": "info",
+          "earned": 3,
+          "max": 3,
+          "detail": "nosniff is set.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/X-Content-Type-Options",
+          "evidence": {
+            "value": "nosniff"
+          }
+        },
+        {
+          "id": "header-framing",
+          "title": "Clickjacking protection is present",
+          "dimension": "headers",
+          "status": "pass",
+          "severity": "info",
+          "earned": 4,
+          "max": 4,
+          "detail": "Framing is restricted via X-Frame-Options.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/X-Frame-Options",
+          "evidence": {
+            "xFrameOptions": "sameorigin"
+          }
+        },
+        {
+          "id": "header-referrer-policy",
+          "title": "Referrer-Policy avoids leaking full URLs",
+          "dimension": "headers",
+          "status": "pass",
+          "severity": "info",
+          "earned": 3,
+          "max": 3,
+          "detail": "Referrer-Policy is \"strict-origin-when-cross-origin\".",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/Referrer-Policy",
+          "evidence": {
+            "value": "strict-origin-when-cross-origin"
+          }
+        },
+        {
+          "id": "header-permissions-policy",
+          "title": "Permissions-Policy restricts powerful features",
+          "dimension": "headers",
+          "status": "warn",
+          "severity": "low",
+          "earned": 2,
+          "max": 3,
+          "detail": "No Permissions-Policy header is set.",
+          "remediation": "Add a Permissions-Policy that disables features the site does not use (camera, microphone, geolocation, etc.).",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/Permissions-Policy",
+          "evidence": {
+            "present": false
+          }
+        },
+        {
+          "id": "header-version-disclosure",
+          "title": "Server does not advertise software versions",
+          "dimension": "headers",
+          "status": "pass",
+          "severity": "info",
+          "earned": 3,
+          "max": 3,
+          "detail": "No precise software versions are advertised in response headers.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Headers/Server",
+          "evidence": {
+            "server": null,
+            "xPoweredBy": null
+          }
+        },
+        {
+          "id": "cookie-secure",
+          "title": "Cookies are marked Secure",
+          "dimension": "cookies",
+          "status": "pass",
+          "severity": "info",
+          "earned": 8,
+          "max": 8,
+          "detail": "All 1 cookie(s) satisfy this flag.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Cookies",
+          "evidence": {
+            "offending": [],
+            "total": 1
+          }
+        },
+        {
+          "id": "cookie-httponly",
+          "title": "Session cookies are marked HttpOnly",
+          "dimension": "cookies",
+          "status": "fail",
+          "severity": "medium",
+          "earned": 0,
+          "max": 8,
+          "detail": "1 of 1 cookie(s) miss it: tracker.",
+          "remediation": "Add HttpOnly to cookies that scripts do not need to read, so an XSS flaw cannot steal them.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Cookies",
+          "evidence": {
+            "offending": [
+              "tracker"
+            ],
+            "total": 1
+          }
+        },
+        {
+          "id": "cookie-samesite",
+          "title": "Cookies set an explicit SameSite policy",
+          "dimension": "cookies",
+          "status": "fail",
+          "severity": "medium",
+          "earned": 0,
+          "max": 6,
+          "detail": "1 of 1 cookie(s) miss it: tracker.",
+          "remediation": "Set SameSite=Lax or Strict to blunt cross-site request forgery.",
+          "reference": "https://developer.mozilla.org/docs/Web/HTTP/Cookies",
+          "evidence": {
+            "offending": [
+              "tracker"
+            ],
+            "total": 1
+          }
+        },
+        {
+          "id": "dns-caa",
+          "title": "A CAA record restricts certificate issuance",
+          "dimension": "dns",
+          "status": "warn",
+          "severity": "low",
+          "earned": 2,
+          "max": 4,
+          "detail": "No CAA record was found, so any CA may issue certificates for this domain.",
+          "remediation": "Publish a CAA record naming only the CAs you use, so no other CA can mis-issue a certificate for your domain.",
+          "reference": "https://developer.mozilla.org/docs/Web/Security/Practical_implementation_guides/CAA",
+          "evidence": {
+            "records": []
+          }
+        },
+        {
+          "id": "dns-ns-redundancy",
+          "title": "The domain has redundant nameservers",
+          "dimension": "dns",
+          "status": "pass",
+          "severity": "info",
+          "earned": 3,
+          "max": 3,
+          "detail": "2 authoritative nameserver(s) are published.",
+          "evidence": {
+            "nameservers": [
+              "ns1.northwind.example",
+              "ns2.northwind.example"
+            ]
+          }
+        },
+        {
+          "id": "dns-dnssec",
+          "title": "The zone is signed with DNSSEC",
+          "dimension": "dns",
+          "status": "warn",
+          "severity": "low",
+          "earned": 3,
+          "max": 5,
+          "detail": "The zone is not DNSSEC-validated according to cloudflare-dns.com.",
+          "remediation": "Enable DNSSEC signing at your DNS provider and publish the DS record at the registrar, so responses cannot be forged in transit.",
+          "reference": "https://www.cloudflare.com/dns/dnssec/how-dnssec-works/",
+          "evidence": {
+            "authenticatedData": false,
+            "resolver": "cloudflare-dns.com"
+          }
+        },
+        {
+          "id": "email-spf",
+          "title": "SPF authorises legitimate senders and rejects the rest",
+          "dimension": "email",
+          "status": "fail",
+          "severity": "high",
+          "earned": 0,
+          "max": 7,
+          "detail": "No SPF record was found.",
+          "remediation": "Publish an SPF record listing your authorised senders and ending in -all, so receivers can reject mail from anywhere else.",
+          "reference": "https://dmarc.org/overview/",
+          "evidence": {
+            "count": 0
+          }
+        },
+        {
+          "id": "email-dmarc",
+          "title": "DMARC is published with an enforcing policy",
+          "dimension": "email",
+          "status": "fail",
+          "severity": "high",
+          "earned": 0,
+          "max": 10,
+          "detail": "No DMARC record was found at _dmarc.",
+          "remediation": "Publish a DMARC record. Start at p=none with a rua address to observe, then move to p=quarantine and p=reject as confidence grows.",
+          "reference": "https://dmarc.org/overview/",
+          "evidence": {
+            "present": false
+          }
+        },
+        {
+          "id": "email-dkim",
+          "title": "A DKIM signing key is published",
+          "dimension": "email",
+          "status": "warn",
+          "severity": "low",
+          "earned": 2,
+          "max": 4,
+          "detail": "No DKIM key was found at the common selectors probed (google). It may use a custom selector.",
+          "remediation": "Confirm DKIM is enabled at your mail provider. DKIM is what lets DMARC survive legitimate forwarding.",
+          "reference": "https://dmarc.org/overview/",
+          "evidence": {
+            "probed": [
+              "google"
+            ]
+          }
+        },
+        {
+          "id": "email-mta-sts",
+          "title": "MTA-STS enforces TLS for inbound mail",
+          "dimension": "email",
+          "status": "warn",
+          "severity": "low",
+          "earned": 2,
+          "max": 3,
+          "detail": "No MTA-STS policy is published.",
+          "remediation": "Publish an MTA-STS policy in enforce mode so sending servers require TLS and a valid certificate when delivering to you.",
+          "reference": "https://www.rfc-editor.org/rfc/rfc8461",
+          "evidence": {
+            "present": false
+          }
+        },
+        {
+          "id": "email-tls-rpt",
+          "title": "TLS-RPT requests transport-security reports",
+          "dimension": "email",
+          "status": "warn",
+          "severity": "low",
+          "earned": 1,
+          "max": 1,
+          "detail": "No TLS-RPT record is published.",
+          "remediation": "Publish a TLS-RPT record so you receive reports when senders fail to negotiate TLS.",
+          "reference": "https://www.rfc-editor.org/rfc/rfc8460",
+          "evidence": {
+            "present": false
+          }
+        },
+        {
+          "id": "exposure-https-redirect",
+          "title": "Plain HTTP redirects to HTTPS",
+          "dimension": "exposure",
+          "status": "pass",
+          "severity": "info",
+          "earned": 4,
+          "max": 4,
+          "detail": "An HTTP request was redirected to https://blog.northwind.example/.",
+          "reference": "https://developer.mozilla.org/docs/Web/Security/Transport_Layer_Security",
+          "evidence": {
+            "finalUrl": "https://blog.northwind.example/",
+            "redirected": true
+          }
+        },
+        {
+          "id": "exposure-security-txt",
+          "title": "A security.txt tells researchers how to report issues",
+          "dimension": "exposure",
+          "status": "warn",
+          "severity": "low",
+          "earned": 2,
+          "max": 3,
+          "detail": "No security.txt was served at /.well-known/security.txt.",
+          "remediation": "Publish /.well-known/security.txt with at least a Contact and an Expires field (RFC 9116), so anyone who finds a flaw knows how to reach you.",
+          "reference": "https://www.rfc-editor.org/rfc/rfc9116",
+          "evidence": {
+            "present": false
+          }
+        },
+        {
+          "id": "exposure-mixed-content",
+          "title": "The homepage loads no resources over plain HTTP",
+          "dimension": "exposure",
+          "status": "pass",
+          "severity": "info",
+          "earned": 3,
+          "max": 3,
+          "detail": "No plain-HTTP resource references were found in the homepage markup.",
+          "reference": "https://developer.mozilla.org/docs/Web/Security/Mixed_content",
+          "evidence": {
+            "references": [],
+            "truncatedBody": false
+          }
+        }
+      ]
+    }
+  ],
+  "verificationCode": "CERTADEL-89DC-52AC-B22B"
+}
