@@ -1,5 +1,11 @@
 # certadel
 
+[![CI](https://github.com/earbona23/certadel/actions/workflows/ci.yml/badge.svg)](https://github.com/earbona23/certadel/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/certadel)](https://www.npmjs.com/package/certadel)
+[![Node ≥18.17](https://img.shields.io/badge/node-%E2%89%A518.17-3c873a)](https://nodejs.org)
+[![Zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 **Certify your citadel.** A passive, authorized external security-posture assessor that
 grades a company's internet-facing assets against a transparent rubric and issues a
 leveled certificate — an HTML report, an SVG badge, and machine-readable JSON.
