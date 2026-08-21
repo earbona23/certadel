@@ -79,7 +79,11 @@ test('nothing writes to a target: no fs writes reach outside report output', () 
   // renderers (which return strings; the CLI, not the engine, writes them) and scope.js
   // (which only reads). The CLI and the dev-only sample generator legitimately write.
   const engine = files.filter(
-    (f) => f.includes('/src/') && !f.includes('/src/report/') && !f.endsWith('/scope.js'),
+    (f) =>
+      f.includes('/src/') &&
+      !f.includes('/src/report/') &&
+      !f.includes('/src/license/') && // the license store legitimately persists an activation
+      !f.endsWith('/scope.js'),
   );
   assert.ok(engine.length > 8, 'the engine has files to inspect');
   for (const f of engine) {

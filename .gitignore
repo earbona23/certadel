@@ -23,3 +23,9 @@ npm-debug.log*
 Thumbs.db
 .vscode/
 .idea/
+
+# License SIGNING key — never commit. Only the embedded public key ships.
+.secrets/
+*.pem
+!test/fixtures/*.pem
+certadel.sarif

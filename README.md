@@ -229,7 +229,7 @@ comfort. certadel is honest about its edges.
 ## Development
 
 ```sh
-npm test           # node --test — zero dependencies, ~40 tests
+npm test           # node --test — zero dependencies, ~46 tests
 npm run typecheck  # tsc --checkJs — types via JSDoc, no build step
 node examples/generate-sample.js   # regenerate the sample certificate
 ```
@@ -238,6 +238,24 @@ The network layer and the grading layer are kept separate: everything that touch
 wire is in `src/net/`, everything that decides a grade is a pure function over collected
 evidence. That is why the whole scoring surface is tested deterministically with no
 network, plus one real end-to-end test against a local HTTPS server.
+
+## Support the project 💜
+
+certadel is free and MIT-licensed, and everything that produces the certificate stays free
+— the full assessment, terminal, HTML certificate, badge, JSON, and the CI gate. Two ways
+to keep it maintained:
+
+- **[Sponsor on GitHub](https://github.com/sponsors/earbona23)** or **[back it on Patreon](https://www.patreon.com/EduardArbona)** — any amount.
+- **[certadel Pro](docs/pro.md)** — an offline, Ed25519-verified license (no account, no
+  telemetry) that unlocks the **SARIF export** (findings into GitHub's Security tab or a
+  SIEM) and baseline comparison. Built for teams and consultants who live in this tool.
+
+```sh
+certadel activate CERTADEL-xxxxx.yyyyy   # verified locally, nothing phones home
+certadel license
+```
+
+Nothing the tool *assesses* is behind the license — Pro is additive exports only.
 
 ## License
 

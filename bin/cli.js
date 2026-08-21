@@ -28,6 +28,9 @@ import { renderBadge } from '../src/report/badge.js';
 import { renderTerminal } from '../src/report/terminal.js';
 import { CHECK_GROUPS } from '../src/checks/index.js';
 import { TIERS, tierRank } from '../src/scoring/rubric.js';
+import { renderSarif } from '../src/report/sarif.js';
+import { entitlement, activate } from '../src/license/store.js';
+import { PRO_FEATURES } from '../src/license/keys.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
@@ -66,12 +69,15 @@ USAGE
   certadel assess --scope <file>   Assess the authorized assets and grade them
   certadel init                    Write a starter scope file you then edit
   certadel checks                  List every check, its dimension and points
+  certadel activate <key>          Activate a Pro license (verified offline)
+  certadel license                 Show the current entitlement
   certadel --help                  Show this help
 
 ASSESS OPTIONS
   --scope <file>        Authorized-scope JSON file (required). See 'certadel init'.
   --out <dir>           Directory for the HTML/JSON/SVG artefacts (default: none)
   --format <list>       Comma list of html,json,badge,all (default: all when --out set)
+                        'sarif' is a Pro output (GitHub Security tab / SIEM)
   --min-tier <tier>     Exit non-zero if the org tier is below this (CI gate)
                         One of: platinum, gold, silver, bronze
   --concurrency <n>     Assets assessed in parallel (default: 1, a polite guest)
@@ -83,7 +89,11 @@ ASSESS OPTIONS
 
 certadel only inspects PUBLIC configuration of hosts you list in the scope file, over
 GET/HEAD and DNS. It never exploits, never authenticates, and never writes. Run it only
-against assets you are authorized to assess.`;
+against assets you are authorized to assess.
+
+Free: every assessment, terminal + HTML certificate + badge + JSON, and the CI gate.
+Pro (a license unlocks): SARIF export and baseline comparison — see #pro. Sponsor:
+https://github.com/sponsors/earbona23  ·  https://www.patreon.com/EduardArbona`;
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
@@ -97,6 +107,8 @@ async function main() {
     console.log(await toolVersion());
     return 0;
   }
+  if (command === 'activate') return cmdActivate(args);
+  if (command === 'license') return cmdLicense();
   if (command === 'checks') return cmdChecks();
   if (command === 'init') return cmdInit(args);
   if (command === 'assess') return cmdAssess(args);
@@ -209,7 +221,56 @@ async function writeArtefacts(report, dir, format) {
     await writeFile(p, renderBadge({ tier: report.rollup.tier, score: report.rollup.score }));
     written.push(p);
   }
+  // SARIF is a Pro output. 'all' does not silently include it; you ask for it by name.
+  if (want.includes('sarif')) {
+    if (await ensurePro('sarif')) {
+      const p = join(dir, 'certadel.sarif');
+      await writeFile(p, renderSarif(report, { version: await toolVersion() }));
+      written.push(p);
+    }
+  }
   for (const p of written) process.stderr.write(`  wrote ${p}\n`);
+}
+
+/** True if the current session is entitled to a Pro feature; prints how to unlock otherwise. */
+async function ensurePro(feature) {
+  const ent = await entitlement();
+  if (ent.pro && ent.features.includes(feature)) return true;
+  process.stderr.write(
+    `\nThe '${feature}' export needs a certadel Pro license.\n` +
+      `  Activate:  certadel activate <key>\n` +
+      `  Get one / sponsor:  https://github.com/earbona23/certadel#pro\n` +
+      `Every assessment, plus the HTML certificate, badge and JSON, is free.\n`,
+  );
+  return false;
+}
+
+async function cmdActivate(args) {
+  const key = args._[1];
+  if (!key) {
+    process.stderr.write('Usage: certadel activate <license-key>\n');
+    return 2;
+  }
+  try {
+    const payload = await activate(key);
+    process.stdout.write(`Activated ${payload.plan} license for ${payload.sub}. Thank you for supporting certadel.\n`);
+    return 0;
+  } catch (e) {
+    process.stderr.write(`Activation failed: ${e.message}\n`);
+    return 1;
+  }
+}
+
+async function cmdLicense() {
+  const ent = await entitlement();
+  if (ent.pro) {
+    process.stdout.write(`Pro (${ent.plan}) — ${ent.sub}\nUnlocked: ${ent.features.join(', ')}\n`);
+  } else {
+    process.stdout.write(
+      `Free tier. ${ent.reason ?? ''}\nPro unlocks: ${PRO_FEATURES.join(', ')} — https://github.com/earbona23/certadel#pro\n`,
+    );
+  }
+  return 0;
 }
 
 function emptyEvidence() {
