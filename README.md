@@ -1,19 +1,29 @@
 # certadel
 
 [![CI](https://github.com/earbona23/certadel/actions/workflows/ci.yml/badge.svg)](https://github.com/earbona23/certadel/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/certadel)](https://www.npmjs.com/package/certadel)
 [![Node ≥18.17](https://img.shields.io/badge/node-%E2%89%A518.17-3c873a)](https://nodejs.org)
 [![Zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+> **Snapshot, not maintained.** This tool works and its tests pass, but it is not under
+> active development: I am not adding features and I do not review pull requests on a
+> schedule. Issues are welcome and I do read them — a reply may take a while. Last
+> substantive change: September 2026.
+>
+> Maintained instead: [revtriage](https://github.com/earbona23/revtriage),
+> [entra-tripwire](https://github.com/earbona23/entra-tripwire),
+> [entraform](https://github.com/earbona23/entraform) and
+> [vantage](https://github.com/earbona23/vantage).
 
 **Certify your citadel.** A passive, authorized external security-posture assessor that
 grades a company's internet-facing assets against a transparent rubric and issues a
 leveled certificate — an HTML report, an SVG badge, and machine-readable JSON.
 
-One command, no install, no dependencies:
+One command, no dependencies — clone it and run:
 
 ```sh
-npx certadel assess --scope scope.json --out ./report
+git clone https://github.com/earbona23/certadel.git && cd certadel
+node bin/cli.js assess --scope scope.json --out ./report
 ```
 
 certadel inspects only the **public configuration** your hosts already show every
@@ -48,17 +58,20 @@ level you can act on and share.** That's certadel.
 
 ## Install
 
-Nothing to install — run it with `npx`:
+Not published to a package registry — clone it and run it. There is nothing to install
+beyond Node itself, because there are no runtime dependencies:
 
 ```sh
-npx certadel --help
+git clone https://github.com/earbona23/certadel.git
+cd certadel
+node bin/cli.js --help
 ```
 
-Or install it:
+To get a `certadel` command on your `PATH` from that checkout:
 
 ```sh
-npm install -g certadel     # global CLI
-npm install certadel        # as a library
+npm link        # uses the local checkout; nothing is downloaded
+certadel --help
 ```
 
 Requires **Node.js 18.17+**. Zero runtime dependencies — the entire tool is Node
@@ -69,13 +82,13 @@ to trust inside it, and you can read all of it.
 
 ```sh
 # 1. Create a scope file naming what you are authorized to assess
-npx certadel init
+node bin/cli.js init
 
 # 2. Edit scope.json — your organisation and its hostnames
 #    { "organization": "Acme", "assets": ["acme.com", "www.acme.com", "api.acme.com"] }
 
 # 3. Assess and write the certificate, report and badge
-npx certadel assess --scope scope.json --out ./report
+node bin/cli.js assess --scope scope.json --out ./report
 ```
 
 You get a terminal summary immediately, and in `./report/`:
@@ -145,8 +158,9 @@ certadel assess --scope scope.json --min-tier silver
 ```
 
 ```yaml
-# .github/workflows/posture.yml
-- run: npx certadel assess --scope scope.json --min-tier gold
+# .github/workflows/posture.yml — clone the tool, then assess your scope
+- run: git clone --depth 1 https://github.com/earbona23/certadel.git /tmp/certadel
+- run: node /tmp/certadel/bin/cli.js assess --scope scope.json --min-tier gold
 ```
 
 And put the grade on your README with the generated badge — the way a build badge or a
