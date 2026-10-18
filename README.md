@@ -5,19 +5,16 @@
 [![Zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-> **Snapshot, not maintained.** This tool works and its tests pass, but it is not under
-> active development: I am not adding features and I do not review pull requests on a
-> schedule. Issues are welcome and I do read them — a reply may take a while. Last
-> substantive change: September 2026.
->
-> Maintained instead: [revtriage](https://github.com/earbona23/revtriage),
-> [entra-tripwire](https://github.com/earbona23/entra-tripwire),
-> [entraform](https://github.com/earbona23/entraform) and
-> [vantage](https://github.com/earbona23/vantage).
-
 **Certify your citadel.** A passive, authorized external security-posture assessor that
 grades a company's internet-facing assets against a transparent rubric and issues a
 leveled certificate — an HTML report, an SVG badge, and machine-readable JSON.
+
+> **Status: snapshot.** Feature-complete for what it does and its tests pass; last
+> substantive change September 2026. I am not adding features here, and issues are welcome
+> and read. Under active maintenance instead: [revtriage](https://github.com/earbona23/revtriage),
+> [entra-tripwire](https://github.com/earbona23/entra-tripwire),
+> [entraform](https://github.com/earbona23/entraform) and
+> [vantage](https://github.com/earbona23/vantage).
 
 One command, no dependencies — clone it and run:
 
