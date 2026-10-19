@@ -48,7 +48,7 @@
     "zero-dependency",
     "devsecops"
   ],
-  "author": "Eduard Arbona",
+  "author": "Eduard Arbona <earbona@arrankago.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
